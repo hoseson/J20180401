@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+	<!-- Oracle setting  -->
+	<!-- 제 아이피로 연결돼있습니다. 본인 걸로 확인 하려면 localhost or 127.0.0.1로 바꿔주세요. -->
+	<Resource name="jdbc/OracleDB" 
+	auth ="Container"
+	type="javax.sql.DataSource"
+	username="J20180401"
+	password="tiger"
+	driverClassName="oracle.jdbc.driver.OracleDriver"
+	factory="org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory"
+	url="jdbc:oracle:thin:@127.0.0.1:1521:xe"
+	maxActive="50"
+	maxIdle="10"
+	/>
+	<!-- mySQL setting  -->
+	<Resource 
+		name="jdbc/MySql" 
+		auth="Container" 
+		type="javax.sql.DataSource" 
+		username="root" 
+		password="mysql" 
+		driverClassName="com.mysql.jdbc.Driver" 
+		factory="org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory" 
+		url="jdbc:mysql://localhost:3306/test" 
+		maxActive="100" 
+		maxIdle="10"/>
+</Context>

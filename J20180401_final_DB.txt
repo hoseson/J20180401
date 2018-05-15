@@ -1,0 +1,2837 @@
+drop sequence career_seq; --경력 시퀀스
+drop sequence cure_seq; --치료분야 시퀀스
+drop sequence insNum_seq; --학회 시퀀스
+drop sequence consult_seq; --상담 게시물번호
+drop sequence notice_seq; --공지사항 시퀀스
+
+create sequence career_seq; --경력 시퀀스
+create sequence cure_seq; --치료분야 시퀀스
+create sequence insNum_seq; --학회 시퀀스
+create sequence consult_seq; --상담 게시물번호
+create sequence notice_seq; --공지사항 시퀀스
+
+DROP TABLE member; -- 회원
+DROP TABLE consult; -- 상담
+DROP TABLE disease; -- 질병
+DROP TABLE doctor; -- 의사
+DROP TABLE department; -- 의과
+DROP TABLE appointment; -- 예약
+DROP TABLE favor; -- 선호도
+DROP TABLE noticeBoard; -- 공지사항/뉴스/학회
+DROP TABLE career; -- 경력
+DROP TABLE institute; -- 학회
+DROP TABLE cure; -- 치료분야
+DROP TABLE forte; -- 강점
+DROP TABLE exerciseBoard; -- 운동정보 게시판
+DROP TABLE diseaseBoard; -- 질병정보 게시판
+DROP TABLE nutritionBoard; -- 영양정보 게시판
+
+-- 회원
+CREATE TABLE member (
+	memNo   VARCHAR2(6)   NOT NULL, -- 회원번호
+	id      VARCHAR2(20)  NOT NULL, -- 아이디
+	pw      VARCHAR2(20)  NOT NULL, -- 비밀번호
+	name    VARCHAR2(10)  NOT NULL, -- 이름
+	tel     VARCHAR2(15)  NOT NULL, -- 전화번호
+	addr    VARCHAR2(100) NOT NULL, -- 주소
+	email   VARCHAR2(100) NOT NULL, -- 이메일
+	regDate VARCHAR2(10)  NOT NULL, -- 등록일
+	manage  VARCHAR2(1)   NOT NULL, -- 관리자
+	memDel  VARCHAR2(1)   NOT NULL  -- 회원삭제여부
+);
+
+-- 회원
+ALTER TABLE member
+ADD CONSTRAINT PK_member -- 회원 기본키
+PRIMARY KEY (memNo); -- 회원번호
+
+ALTER TABLE member
+MODIFY (manage DEFAULT 'P'); --회원 P 관리자 M
+
+ALTER TABLE member
+MODIFY (memDel DEFAULT 'N'); --삭제 됨 Y 삭제 안 됨 N
+
+insert into member values('1','asdf','1234','손호세','010-1234-1234','서울','kk1@asdf.com',sysdate,'M','N');
+insert into member values('2','a','1234','김원기','010-2234-1234','인천','kk2@asdf.com',sysdate,'P','N');
+insert into member values('3','b','1234','고경욱','010-3234-1234','대전','kk3@asdf.com',sysdate,'P','N');
+insert into member values('4','c','1234','빈준형','010-4234-1234','대구','kk4@asdf.com',sysdate,'P','N');
+insert into member values('5','d','1234','전고은','010-5234-1234','원주','kk5@asdf.com',sysdate,'P','N');
+insert into member values('6','e','1234','박종우','010-6234-1234','춘천','kk6@asdf.com',sysdate,'P','N');
+insert into member values('7','f','1234','김두한','010-7234-1234','부산','kk7@asdf.com',sysdate,'P','N');
+insert into member values('8','g','1234','도우너','010-8234-1234','서울','kk8@asdf.com',sysdate,'P','N');
+insert into member values('9','h','1234','마우스','010-9234-1234','광주','kk9@asdf.com',sysdate,'P','N');
+insert into member values('10','i','1234','클래스','010-0234-1234','서울','kk10@asdf.com',sysdate,'P','N'); 
+
+COMMENT ON TABLE member IS '회원'; -- 회원
+COMMENT ON COLUMN member.memNo IS '회원번호'; -- 회원번호
+COMMENT ON COLUMN member.id IS '아이디'; -- 아이디
+COMMENT ON COLUMN member.pw IS '비밀번호'; -- 비밀번호
+COMMENT ON COLUMN member.name IS '이름'; -- 이름
+COMMENT ON COLUMN member.tel IS '전화번호'; -- 전화번호
+COMMENT ON COLUMN member.addr IS '주소'; -- 주소
+COMMENT ON COLUMN member.email IS '이메일'; -- 이메일
+COMMENT ON COLUMN member.regDate IS '등록일'; -- 등록일
+COMMENT ON COLUMN member.manage IS '관리자'; -- 관리자
+COMMENT ON COLUMN member.memDel IS '회원삭제여부'; -- 회원삭제여부
+
+-- 상담
+CREATE TABLE consult (
+	regDate   VARCHAR2(10) NOT NULL, -- 등록일
+	consultNo VARCHAR2(3)  NOT NULL, -- 게시글번호
+	memNo     VARCHAR2(6)  NOT NULL, -- 회원번호
+	subject   VARCHAR2(150) NOT NULL, -- 제목
+	deptName   VARCHAR2(26) NOT NULL, -- 의과이름
+	readCount NUMBER       NOT NULL, -- 조회수
+	content   VARCHAR2(500)  NOT NULL, -- 질문
+	recontent VARCHAR2(500) NULL      -- 답변
+);
+
+-- 상담
+ALTER TABLE consult
+ADD CONSTRAINT PK_consult -- 상담 기본키
+PRIMARY KEY (regDate, consultNo);-- 등록일 -- 게시글번호
+
+ALTER TABLE consult
+MODIFY(recontent DEFAULT NULL);
+
+COMMENT ON TABLE consult IS '상담'; -- 상담
+COMMENT ON COLUMN consult.regDate IS '등록일'; -- 등록일
+COMMENT ON COLUMN consult.consultNo IS '게시글번호'; -- 게시글번호
+COMMENT ON COLUMN consult.memNo IS '회원번호'; -- 회원번호
+COMMENT ON COLUMN consult.subject IS '제목'; -- 제목
+COMMENT ON COLUMN consult.deptName IS '의과이름'; -- 의과이름
+COMMENT ON COLUMN consult.readCount IS '조회수'; -- 조회수
+COMMENT ON COLUMN consult.content IS '질문'; -- 질문
+COMMENT ON COLUMN consult.recontent IS '답변'; -- 답변
+
+insert into consult VALUES('18/04/02',consult_seq.NEXTVAL,'3','50대 주부입니다.','순환기내과',1,'몸이 더워지며 심할 땐 땀까지 흐르고 온몸이 쑤시고 아픕니다. 왜 그런지 알고 싶어서 글 올립니다.'
+,'안녕하세요? 중앙정보병원입니다.
+
+홈페이지 상담으로 답변이 어려워 먼저 1차 의료기관 진료에서 
+진료받으시고 상병을 확인하시고 상급병원 의뢰된경우 
+본원에서 상담으로 진행을 권유합니다. 처움방문의 경우
+전화예약실 3410-3000이나 인터넷에서 예약가능하며
+진료의뢰서 지참하는경우 보험적용이 가능합니다.
+
+감사합니다.');
+insert into consult VALUES('18/04/05',consult_seq.NEXTVAL,'3','설화정(니트로클리세린)복용시 문의','순환기내과',1,'가슴 통증 협심증 증세시 설화정은 일 최대 몇알까지 혀 밑에 복용할수 있으며 지속적으로 복용시 부작용은 없나요?'
+,'안녕하세요? 중앙정보병원입니다.
+
+홈페이지 상담으로 안내가 어려워 설화정투여용량은 
+현재 진료중인 의료진의 지시하에 사용울 권합니다.
+
+감사합니다.');
+insert into consult VALUES('18/04/10',consult_seq.NEXTVAL,'3','발뒤꿈치에 상처 10년째 아물지를 않습니다.','신경외과',1,'10년째 지금 발뒤꿈치에 상처가 아물지를 않고 있습니다. 혹시 15년전 파산균 이 원인인가요? 아니면 말초신경 손상으로 인한 상처일가요? 확실한 진단을 받고 싶습니다..당뇨는 없구요,,,,건강검진 아무이상 없습니다. 지금 이 상황엔 수술이라두 하면 상처가 깨끗이 아물수 잇나요?
+전문가 선생님들 답변 부탁드립니다.'
+,'안녕하세요? 중앙정보병원입니다.
+
+홈페이지 상담으로 답변이 어려워 신경문제는 신경과 말초분야 김병준, 최병옥, 민주홍 교수님 진료에서 상담을 권합니다.
+발뒤꿈치 상처에 감염은 신경과 진료에서 협진으로 진행될것으로 예상됩니다.
+처음 방문의경우 전화예약실 3410-3000에서 예약가능하며 처음방문의경우 진료의뢰서 지참하는경우
+보험적용이 가능합니다.
+
+감사합니다.');
+insert into consult VALUES('18/04/15',consult_seq.NEXTVAL,'3','소화불량, 복통','소화기내과',1,'식사후 속이 거북하고 소화가가 안됨. 배를 누르면 통증이 심함. 개인병원 및 근처 대학병원 소화기 내과 진료후 장염, 과민성대장증상 증후군이라 하나 복약후에도 개선이 안됨.','');
+insert into consult VALUES('18/04/02',consult_seq.NEXTVAL,'2','10일 시작되는 파업과 관련 예약질문','감염내과',1,'18일 진료예약이 있는데 관계 있나요?'
+,'안녕하세요? 중앙정보병원입니다.
+
+말씀하신 내용을 해당과에 확인해 본 바, 정상 진료 하신다고 하십니다. 
+
+감사합니다.');
+insert into consult VALUES('18/04/05',consult_seq.NEXTVAL,'8','신종플루에 관하여','감염내과',1,'신종플루가 의심이되어 타미플루 1정을 어제 저녁에 먹은 상태인데 오늘 확진검사 결과 음성 판정이 나왔습니다. 그렇다면 남은 타미플루 9정을 다 먹어야 하나요? 아니면 여기서 중단해도 괜찮을까요? 제가 현재 크론병에 B형간염 보균자라 어떻게 해야 좋을지 모르겠습니다.'
+,'안녕하세요? 중앙정보병원입니다.
+
+타미플루는 항바이러스 제제로 증상에 도움이 되므로 복용하도록 권장하고 있으나 
+고객님의 경우 기저 질환이 있으므로 신체상태등을 고려해야 하겠습니다. 
+
+감사합니다.');
+insert into consult VALUES('18/04/10',consult_seq.NEXTVAL,'4','c형 간염검사','감염내과',1,'요즘들어 부쩍 어지러움증과 매스거움 증상이 계속되고 있습니다 전에 c형간염 판정을 받은적이 있고 이로인해 이런증상이 나타나는지 알고싶은데 검사를 어디에서 해야하며 비용과 시간이 얼마나 소요 되는지요'
+,'안녕하세요? 중앙정보병원입니다.
+
+회원님의 상담은 더 정확한 답변 등록을 해드리기 위해 소화기내과분과로 이전되었습니다.
+
+감사합니다.');
+insert into consult VALUES('18/04/15',consult_seq.NEXTVAL,'9','비장제거시 신종플루 고위험군','감염내과',1,'89년생인 아들이 3살 때 사고로 비장을 제거 하였습니다. 요즘 유행하는 신종풀루 고위험군에 속하는지요? 페렴예방 주사와 페렴구균 백신을 맞아야하는지요? 맞아야한다면 방법을 자세히 설명해 주시면 너무 감사하겠습니다.'
+,'안녕하세요? 중앙정보병원입니다.
+
+면역저하자는 신종 플루 고위험군에 속하며 무비장증 또는 비장기능 저하자일 경우 이에 해당됩니다. 
+컨디션의 변화가 없고 신체상태가 양호하다면 폐렴 예방을 위한 폐렴구균 백신 접종을 하셔도 상관없으나 
+접종전 의사의 진료를 보셔야 정확히 알수 있습니다.
+
+감사합니다.');
+insert into consult VALUES('18/04/05',consult_seq.NEXTVAL,'5','예약을 잡아놓은 상태인데 파업때문에 뒤로 밀리나요?','감염내과',1,'뒤로 밀리나요?'
+,'안녕하세요? 중앙정보병원입니다.
+
+말씀하신 내용을 해당과에 확인해 본 바, 정상 진료 하신다고 하십니다. 
+
+감사합니다.');
+insert into consult VALUES('18/04/22',consult_seq.NEXTVAL,'6','지속적인 방광염 재발, 항생제 내성으로 문의드립니다.','감염내과',1,'항생제내성으로 인해서 방광염이 지속적으로 재발하는 것 같은데.. 비뇨기과 말고 감염내과로 진료과를 바꿔서 진료받는게 현명할까요.. 글고 항생제 내성균에 감염된 상태에서 완치되고 난 후 또 방광염이 감염되면 그땐 1,2차 항생제로 치료가 더 이상은 불가능한지 궁금합니다. ','');
+insert into consult VALUES('18/04/19',consult_seq.NEXTVAL,'5','인플루엔자 예방접종이 MRI 검사에 영향은 없는지요?','감염내과',1,'공교롭게도 다가오는 10월초 검사(복부 MIR 등)일과 같은 날에 
+계절독감(인플루엔자) 예방접종이 예약되어 있습니다. 검사는 복부 MIR촬영 등 오후 7시에 받는데 당일 오전에 인플루엔자 예방접종을 받아도 될는지요?','');
+
+-- 질병
+CREATE TABLE disease (
+	disName VARCHAR2(20) NOT NULL, -- 질병이름
+	deptNo  VARCHAR2(6)  NOT NULL  -- 의과번호
+);
+
+-- 질병
+ALTER TABLE disease
+ADD CONSTRAINT PK_disease -- 질병 기본키
+PRIMARY KEY (disName,deptNo); -- 질병이름  -- 의과번호
+
+COMMENT ON TABLE disease IS '질병'; -- 질병
+COMMENT ON COLUMN disease.disName IS '질병이름'; -- 질병이름
+COMMENT ON COLUMN disease.deptNo IS '의과번호'; -- 의과번호
+
+-- 의사
+CREATE TABLE doctor (
+	docNo   VARCHAR2(8)  NOT NULL, -- 의사번호
+	docName VARCHAR2(10) NOT NULL, -- 의사이름
+	deptNo   VARCHAR2(8)  NOT NULL  -- 의과번호
+);
+
+-- 의사
+ALTER TABLE doctor
+ADD CONSTRAINT PK_doctor -- 의사 기본키
+PRIMARY KEY (docNo); -- 의사번호
+
+COMMENT ON TABLE doctor IS '의사'; -- 의사
+COMMENT ON COLUMN doctor.docNo IS '의사번호'; -- 의사번호
+COMMENT ON COLUMN doctor.docName IS '의사이름'; -- 의사이름
+COMMENT ON COLUMN doctor.deptNo IS '의과번호'; -- 의과번호
+
+insert into doctor values('doc1','고경욱','dept1');
+insert into doctor values('doc2','전고은','dept23');
+insert into doctor values('doc3','손호세','dept22');
+insert into doctor values('doc4','김원기','dept6');
+insert into doctor values('doc5','빈준형','dept5');
+insert into doctor values('doc6','박종우','dept27');
+insert into doctor values('doc7','전고은','dept6');
+insert into doctor values('doc8','최형우','dept1');
+insert into doctor values('doc9','나지완','dept1');
+insert into doctor values('doc10','김주찬','dept1');
+insert into doctor values('doc11','김버디','dept1');
+insert into doctor values('doc12','김선빈','dept2');
+insert into doctor values('doc13','양현종','dept2');
+insert into doctor values('doc14','임창용','dept2');
+insert into doctor values('doc15','김세현','dept2');
+insert into doctor values('doc16','황윤호','dept2');
+insert into doctor values('doc17','안치홍','dept3');
+insert into doctor values('doc18','심동섭','dept3');
+insert into doctor values('doc19','박정수','dept3');
+insert into doctor values('doc20','김윤동','dept3');
+insert into doctor values('doc21','윤석민','dept3');
+insert into doctor values('doc22','임기영','dept4');
+insert into doctor values('doc23','정용운','dept4');
+insert into doctor values('doc24','이민우','dept4');
+insert into doctor values('doc25','김민식','dept4');
+insert into doctor values('doc26','백용환','dept4');
+insert into doctor values('doc27','한승택','dept5');
+insert into doctor values('doc28','서동욱','dept5');
+insert into doctor values('doc29','최원준','dept5');
+insert into doctor values('doc30','정성훈','dept5');
+insert into doctor values('doc31','이범호','dept11');
+insert into doctor values('doc32','김호령','dept6');
+insert into doctor values('doc33','신종길','dept6');
+insert into doctor values('doc34','이명기','dept6');
+insert into doctor values('doc35','유재신','dept11');
+insert into doctor values('doc36','오준협','dept11');
+insert into doctor values('doc37','고장협','dept7');
+insert into doctor values('doc38','박진태','dept7');
+insert into doctor values('doc39','박찬호','dept7');
+insert into doctor values('doc40','김태연','dept7');
+insert into doctor values('doc41','이순규','dept7');
+insert into doctor values('doc42','김효연','dept8');
+insert into doctor values('doc43','권유리','dept8');
+insert into doctor values('doc44','임윤아','dept8');
+insert into doctor values('doc45','최수영','dept8');
+insert into doctor values('doc46','서주현','dept8');
+insert into doctor values('doc47','한상수','dept9');
+insert into doctor values('doc48','문성민','dept9');
+insert into doctor values('doc49','김학민','dept9');
+insert into doctor values('doc50','김요환','dept9');
+insert into doctor values('doc51','손흥민','dept9');
+insert into doctor values('doc52','오정환','dept10');
+insert into doctor values('doc53','강민호','dept10');
+insert into doctor values('doc54','양준혁','dept10');
+insert into doctor values('doc55','이용규','dept10');
+insert into doctor values('doc56','정근우','dept10');
+insert into doctor values('doc57','김태균','dept11');
+insert into doctor values('doc58','이태양','dept11');
+insert into doctor values('doc59','강정호','dept12');
+insert into doctor values('doc60','류현진','dept12');
+insert into doctor values('doc61','심주창','dept12');
+insert into doctor values('doc62','손시헌','dept12');
+insert into doctor values('doc63','손시안','dept12');
+insert into doctor values('doc64','강한울','dept13');
+insert into doctor values('doc65','구자욱','dept13');
+insert into doctor values('doc66','강백호','dept13');
+insert into doctor values('doc67','박지성','dept13');
+insert into doctor values('doc68','박세리','dept13');
+insert into doctor values('doc69','배주현','dept14');
+insert into doctor values('doc70','강슬기','dept14');
+insert into doctor values('doc71','손시안','dept14');
+insert into doctor values('doc72','심석희','dept14');
+insert into doctor values('doc73','김예림','dept14');
+insert into doctor values('doc74','박수영','dept15');
+insert into doctor values('doc75','박태환','dept15');
+insert into doctor values('doc76','윤형빈','dept15');
+insert into doctor values('doc77','손승완','dept15');
+insert into doctor values('doc78','김연아','dept15');
+insert into doctor values('doc79','김연경','dept16');
+insert into doctor values('doc80','이승민','dept16');
+insert into doctor values('doc81','강감찬','dept16');
+insert into doctor values('doc82','이순신','dept16');
+insert into doctor values('doc83','김유신','dept16');
+insert into doctor values('doc84','대조영','dept17');
+insert into doctor values('doc85','논개','dept17');
+insert into doctor values('doc86','오연서','dept17');
+insert into doctor values('doc87','민효린','dept17');
+insert into doctor values('doc88','유인영','dept17');
+insert into doctor values('doc89','김새롬','dept18');
+insert into doctor values('doc90','엄정화','dept18');
+insert into doctor values('doc91','송혜교','dept18');
+insert into doctor values('doc92','김태희','dept18');
+insert into doctor values('doc93','전지현','dept18');
+insert into doctor values('doc94','서지혜','dept19');
+insert into doctor values('doc95','정유미','dept19');
+insert into doctor values('doc96','구혜선','dept19');
+insert into doctor values('doc97','신세경','dept19');
+insert into doctor values('doc98','전소민','dept19');
+insert into doctor values('doc99','추자현','dept20');
+insert into doctor values('doc100','고준희','dept20');
+insert into doctor values('doc101','박나래','dept20');
+insert into doctor values('doc102','김숙','dept20');
+insert into doctor values('doc103','송은이','dept20');
+insert into doctor values('doc104','신봉선','dept21');
+insert into doctor values('doc105','이지은','dept21');
+insert into doctor values('doc106','장나라','dept21');
+insert into doctor values('doc107','박보영','dept21');
+insert into doctor values('doc108','송지효','dept21');
+insert into doctor values('doc109','서현진','dept22');
+insert into doctor values('doc110','박신혜','dept22');
+insert into doctor values('doc111','윤세아','dept22');
+insert into doctor values('doc112','한지민','dept22');
+insert into doctor values('doc113','손나은','dept23');
+insert into doctor values('doc114','한효주','dept23');
+insert into doctor values('doc115','김유정','dept23');
+insert into doctor values('doc116','이영애','dept23');
+insert into doctor values('doc117','장동건','dept28');
+insert into doctor values('doc118','강민경','dept24');
+insert into doctor values('doc119','고소영','dept24');
+insert into doctor values('doc120','유인나','dept24');
+insert into doctor values('doc121','원빈','dept24');
+insert into doctor values('doc122','강동원','dept24');
+insert into doctor values('doc123','이승기','dept28');
+insert into doctor values('doc124','김무열','dept25');
+insert into doctor values('doc125','정우성','dept25');
+insert into doctor values('doc126','마동석','dept25');
+insert into doctor values('doc127','이종석','dept25');
+insert into doctor values('doc128','유승호','dept25');
+insert into doctor values('doc129','김생민','dept26');
+insert into doctor values('doc130','박효신','dept26');
+insert into doctor values('doc131','박보검','dept26');
+insert into doctor values('doc132','송중기','dept26');
+insert into doctor values('doc133','하정우','dept26');
+insert into doctor values('doc134','박서준','dept27');
+insert into doctor values('doc135','조정석','dept27');
+insert into doctor values('doc136','장혁','dept27');
+insert into doctor values('doc137','조승우','dept27');
+insert into doctor values('doc138','임시완','dept28');
+insert into doctor values('doc139','지창욱','dept28');
+insert into doctor values('doc140','유재석','dept28');
+
+
+-- 의과
+CREATE TABLE department (
+	deptNo   VARCHAR2(6)  NOT NULL, -- 의과번호
+	deptName VARCHAR2(26) NOT NULL  -- 의과이름
+);
+
+-- 의과
+ALTER TABLE department
+ADD CONSTRAINT PK_department -- 의과 기본키
+PRIMARY KEY (deptNo); -- 의과번호
+		
+COMMENT ON TABLE department IS '의과'; -- 의과
+COMMENT ON COLUMN department.deptNo IS '의과번호'; -- 의과번호
+COMMENT ON COLUMN department.deptName IS '의과이름'; -- 의과이름
+
+insert into department values('dept1','감염내과');
+insert into department values('dept2','내분비대사내과');
+insert into department values('dept3','호흡기내과');
+insert into department values('dept4','성형외과');
+insert into department values('dept5','소아청소년과');
+insert into department values('dept6','신경과');
+insert into department values('dept7','신경외과');
+insert into department values('dept8','안과');
+insert into department values('dept9','영상의학과');
+insert into department values('dept10','소와외과');
+insert into department values('dept11','소화기외과');
+insert into department values('dept12','외과');
+insert into department values('dept13','이식외과');
+insert into department values('dept14','혈관외과');
+insert into department values('dept15','이비인후과');
+insert into department values('dept16','재활의학과');
+insert into department values('dept17','정형외과');
+insert into department values('dept18','치과');
+insert into department values('dept19','피부과');
+insert into department values('dept20','핵의학과');
+insert into department values('dept21','흉부외과');
+insert into department values('dept22','산부인과');
+insert into department values('dept23','마취통증의학과');
+insert into department values('dept24','방사선종양학과');
+insert into department values('dept25','병리과');
+insert into department values('dept26','류미티스내과');
+insert into department values('dept27','소화기내과');
+insert into department values('dept28','순환기내과');
+
+CREATE TABLE appointment (
+	memNo   VARCHAR2(6)    NOT NULL, -- 회원번호
+	docNo   VARCHAR2(6)    NOT NULL, -- 의사번호
+	appDate VARCHAR2(10)   NOT NULL, -- 예약날짜
+	appTime VARCHAR2(10)   NOT NULL, -- 예약시간
+	appRes  VARCHAR2(90)   NOT NULL  -- 예약사유
+);
+
+-- 예약
+ALTER TABLE appointment
+ADD CONSTRAINT PK_appointment -- 예약 기본키
+PRIMARY KEY (memNo,docNo,	appDate,appTime );  -- 회원번호 -- 의사번호 -- 예약날짜 -- 예약시간
+
+COMMENT ON TABLE appointment IS '예약'; -- 예약
+COMMENT ON COLUMN appointment.memNo IS '회원번호'; -- 회원번호
+COMMENT ON COLUMN appointment.docNo IS '의사번호'; -- 의사번호
+COMMENT ON COLUMN appointment.appDate IS '예약날짜'; -- 예약날짜
+COMMENT ON COLUMN appointment.appTime IS '예약시간'; -- 예약시간
+COMMENT ON COLUMN appointment.appRes  IS '예약사유'; -- 예약사유
+
+insert into appointment values('3','doc74','18/04/27','11:00','중이염 증상이 있습니다.');
+insert into appointment values('3','doc46','18/04/26','11:30','안압이 높아져서 어지럽습니다.');
+insert into appointment values('3','doc63','18/04/26','13:00','목에 너무 심한 염증이 나서 아무것도 삼킬 수 없습니다.');
+insert into appointment values('3','doc2','18/04/28','13:30','왼쪽 어금니에 심각한 충치가 생긴 것 같습니다.');
+insert into appointment values('3','doc2','18/04/30','10:00','사랑니 발치때문에 예약 신청합니다.');
+
+insert into appointment values('3','doc26','18/04/02','11:00','안면윤곽 상담을 받고 싶어요.');
+insert into appointment values('3','doc136','18/04/04','11:30','소화불량으로 인한 복통이 심각합니다.');
+insert into appointment values('3','doc136','18/04/05','11:30','소화불량으로 인한 복통이 심각합니다.');
+insert into appointment values('3','doc136','18/04/06','11:30','소화불량으로 인한 복통이 심각합니다.');
+insert into appointment values('3','doc136','18/04/08','11:30','소화불량으로 인한 복통이 심각합니다.');
+insert into appointment values('3','doc136','18/04/12','11:30','소화불량으로 인한 복통이 심각합니다.');
+insert into appointment values('3','doc136','18/04/23','11:30','소화불량으로 인한 복통이 심각합니다.');
+insert into appointment values('3','doc136','18/04/21','11:30','소화불량으로 인한 복통이 심각합니다.');
+insert into appointment values('3','doc84','18/04/01','15:00','팔 인대에 문제가 생긴 것 같습니다. 붓기가 너무 심해요.');
+insert into appointment values('3','doc19','18/04/10','13:30','성인여드름으로 인한 통증으로 예약 신청합니다.');
+insert into appointment values('3','doc82','18/04/15','10:00','팔 인대 치료 후 재활 치료 예약합니다.');
+insert into appointment values('3','doc82','18/04/24','10:30','팔 인대 치료 후 재활 치료 예약합니다.');
+
+insert into appointment values('2','doc63','18/04/25','09:30','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/25','10:00','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/25','11:00','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/25','11:30','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/25','14:30','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/25','15:00','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/25','15:30','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/25','16:30','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/27','09:00','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/27','09:30','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/27','10:00','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/27','10:30','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/27','11:00','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/27','11:30','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/27','13:00','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/27','13:30','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/27','14:00','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/27','14:30','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/27','15:00','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/27','15:30','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/27','16:00','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/27','16:30','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/28','09:00','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/28','09:30','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/28','10:00','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/28','10:30','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/28','11:00','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/28','11:30','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/28','13:00','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/28','13:30','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/28','14:00','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/28','15:00','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/28','15:30','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/28','16:00','열이 40도예요.');
+insert into appointment values('2','doc63','18/04/28','16:30','열이 40도예요.');
+
+
+-- 선호도
+CREATE TABLE favor (
+	docNo       VARCHAR2(6)  NOT NULL, -- 의사번호
+	docReg_date VARCHAR2(10) NOT NULL, -- 날짜
+	memNo       VARCHAR2(6)  NOT NULL  -- 회원번호
+);
+
+-- 선호도
+ALTER TABLE favor
+ADD CONSTRAINT PK_favor -- 선호도 기본키
+PRIMARY KEY (docNo, docReg_date,memNo); -- 의사번호 -- 날짜 -- 회원번호
+
+COMMENT ON TABLE favor IS '선호도'; -- 선호도
+COMMENT ON COLUMN favor.docNo IS '의사번호'; -- 의사번호
+COMMENT ON COLUMN favor.docReg_date IS '날짜'; -- 날짜
+COMMENT ON COLUMN favor.memNo IS '회원번호'; -- 회원번호
+
+insert into favor values('doc1','18/04/02','1');
+insert into favor values('doc1','18/04/02','2');
+insert into favor values('doc1','18/04/02','3');
+insert into favor values('doc1','18/04/02','4');
+insert into favor values('doc1','18/04/02','5');
+insert into favor values('doc1','18/04/02','6');
+insert into favor values('doc1','18/04/02','7');
+insert into favor values('doc1','18/04/02','8');
+insert into favor values('doc2','18/04/02','1');
+insert into favor values('doc2','18/04/02','2');
+insert into favor values('doc2','18/04/02','3');
+insert into favor values('doc2','18/04/02','4');
+insert into favor values('doc2','18/04/02','5');
+insert into favor values('doc3','18/04/02','1');
+insert into favor values('doc3','18/04/02','2');
+insert into favor values('doc3','18/04/02','3');
+
+-- 공지사항/뉴스/학회
+CREATE TABLE noticeBoard (
+	regDate   VARCHAR2(10)  NOT NULL, -- 등록일
+	boardNo   number   NOT NULL, -- 게시물번호
+	type      VARCHAR2(20)  NOT NULL, -- 게시물종류
+	subject   VARCHAR2(150)  NOT NULL, -- 제목
+	content   VARCHAR2(500) NOT NULL, -- 내용
+	readCount NUMBER        NOT NULL  -- 조회수
+);
+
+-- 공지사항/뉴스/학회
+ALTER TABLE noticeBoard
+ADD CONSTRAINT PK_noticeBoard -- 공지사항/뉴스/학회 기본키
+PRIMARY KEY (regDate,boardNo); -- 등록일 -- 게시물번호
+
+COMMENT ON TABLE noticeBoard IS '공지사항/뉴스/학회'; -- 공지사항/뉴스/학회
+COMMENT ON COLUMN noticeBoard.regDate IS '등록일'; -- 등록일
+COMMENT ON COLUMN noticeBoard.boardNo IS '게시물번호'; -- 게시물번호
+COMMENT ON COLUMN noticeBoard.type IS '게시물종류'; -- 게시물종류
+COMMENT ON COLUMN noticeBoard.subject IS '제목'; -- 제목
+COMMENT ON COLUMN noticeBoard.content IS '내용'; -- 내용
+COMMENT ON COLUMN noticeBoard.readCount IS '조회수'; -- 조회수
+
+insert into noticeBoard values(sysdate,notice_seq.nextval,'뉴스','중앙정보병원 > 중앙정보병원 개명','손호세(이사)의 이름으로 설립된 중앙정보병원이 중앙정보병원으로 변경되었다는 소식입니다. 돈 좀 풀어주세요 이사님',0);
+insert into noticeBoard values(sysdate,notice_seq.nextval,'뉴스','전고은 대리 알고보니 병원 실세?','중앙정보병원의 실세는 전고은 대리였다는 소식이 빗발치고 있습니다. 여왕으로 군림한다는 전고은 대리의 실황을 살펴보겠습니다.',0);
+insert into noticeBoard values(sysdate,notice_seq.nextval,'공지사항','4월 1일은 병원 휴무입니다.','병원도 쉬고 삽시다.',0);
+insert into noticeBoard values(sysdate,notice_seq.nextval,'공지사항','4월 공사 안내','환자분들의 편의를 돕기 위해 중앙 현관을 공사할 예정입니다. 4월 28일~~',0);
+insert into noticeBoard values(sysdate,notice_seq.nextval,'뉴스','빈준형 사원 승진하려면 10년 뒤에','평생 노예로 살겠다는 빈준형 사원의 선전포고 입니다.~~~',0);
+insert into noticeBoard values(sysdate,notice_seq.nextval,'공지사항','미세먼지와 황사로 인한 조치','마스크 잘 쓰고 바깥 외출 자제하고 물 많이 마셔요~~',0);
+insert into noticeBoard values(sysdate,notice_seq.nextval,'뉴스','박종우 과장 만년 과장 끝에','집에 일찍 퇴근 했다는 소식입니다..(청춘사업으로 바쁘답니다.)',0);
+insert into noticeBoard values(sysdate,notice_seq.nextval,'공지사항','5월 병원 일정 안내','오늘도 바쁘고 내일도 바쁘고 모레도 바쁠겁니다.',0);
+insert into noticeBoard values(sysdate,notice_seq.nextval,'뉴스','두산 vs 기아 1위를 달리는 두산을 과연 기아는 제동을 걸수있을것인가','기아가 작년과 같이 우승 가~~~악',0);
+insert into noticeBoard values(sysdate,notice_seq.nextval,'뉴스','한화가 작년과 다르게 용병 호잉 영입으로 순위권 진입!! ','과연 올해의 한화는 가을야구 진출가능?!',0);
+insert into noticeBoard values(sysdate,notice_seq.nextval,'학회','닭이 먼저냐 달걀이 먼저냐','됐고 그런 의미해서 오늘 저녁은 치킨~!',0);
+insert into noticeBoard values(sysdate,notice_seq.nextval,'뉴스','점심 메뉴가 고민이시라구요?','저도 그래요~ 그런 의미에서 shall we join?',0);
+insert into noticeBoard values(sysdate,notice_seq.nextval,'뉴스','풍* 빌딩의 **가게의 순두부찌개에서 문제가??','네~ 먹지마세요 쓰레기통에 양보하세요',0);
+
+-- 운동정보 게시판
+CREATE TABLE exerciseBoard (
+	regDate   VARCHAR2(10)  NOT NULL, -- 등록일
+	boardNo   VARCHAR2(6)   NOT NULL, -- 게시물번호
+	subject   VARCHAR2(50)  NOT NULL, -- 제목
+	content   VARCHAR2(500) NOT NULL, -- 내용
+	readCount NUMBER        NOT NULL  -- 조회수
+);
+
+-- 운동정보 게시판
+ALTER TABLE exerciseBoard
+ADD CONSTRAINT PK_exerciseBoard -- 운동정보 게시판 기본키
+PRIMARY KEY (regDate, boardNo); -- 등록일 -- 게시물번호
+
+COMMENT ON TABLE exerciseBoard IS '운동정보 게시판'; -- 운동정보 게시판
+COMMENT ON COLUMN exerciseBoard.regDate IS '등록일'; -- 등록일
+COMMENT ON COLUMN exerciseBoard.boardNo IS '게시물번호'; -- 게시물번호
+COMMENT ON COLUMN exerciseBoard.subject IS '제목'; -- 제목
+COMMENT ON COLUMN exerciseBoard.content IS '내용'; -- 내용
+COMMENT ON COLUMN exerciseBoard.readCount IS '조회수'; -- 조회수
+
+insert into exerciseboard values(sysdate,'1','운동게시판~!','운동정보를 알려드립니다.',0);
+insert into exerciseboard values(sysdate,'2','운동운동','하하오호호',0);
+insert into exerciseboard values(sysdate,'3','운동1','오늘 유난히 힘들다 빨리 프로젝트 끝내고 싶다.',0);
+insert into exerciseboard values(sysdate,'4','운동운동운동동','오늘도 운동 내일도 운동',0);
+insert into exerciseboard values(sysdate,'5','1달만에 몸무게 10kg 빼기','밥 조금 먹고 하루종일 운동하면 될거에요~',0);
+insert into exerciseboard values(sysdate,'6','아침운동 vs 저녁운동?','뭐든 했으면 좋겠습니다... 운동하세요~',0);
+insert into exerciseboard values(sysdate,'7','운동 이야기','마라톤 최고~!',0);
+insert into exerciseboard values(sysdate,'8','엘리베이터보다 계단?','저는 엘리베이터 타고 갈게요... 힘드네요. 죄송합니다.',0);
+insert into exerciseboard values(sysdate,'9','하루 30분만 투자하세요~','운동은 삶을 건강하게 만들어 줍니다. 운동하세요 운동~~',0);
+insert into exerciseboard values(sysdate,'10','작심 3일 운동 효과 있나?','당연히 없지요 무슨 말씀을...',0);
+insert into exerciseboard values(sysdate,'11','숨쉬기 운동 세상에서 제일 힘들어','미세먼지 때문에 더 힘들어요.',0);
+
+-- 질병정보 게시판
+CREATE TABLE diseaseBoard (
+	regDate   VARCHAR2(10)  NOT NULL, -- 등록일
+	boardNo   VARCHAR2(6)   NOT NULL, -- 게시물번호
+	subject   VARCHAR2(50)  NOT NULL, -- 제목
+	content   VARCHAR2(500) NOT NULL, -- 내용
+	readCount NUMBER        NOT NULL  -- 조회수
+);
+
+-- 질병정보 게시판
+ALTER TABLE diseaseBoard
+ADD CONSTRAINT PK_diseaseBoard -- 질병정보 게시판 기본키
+PRIMARY KEY (regDate, boardNo); -- 등록일 -- 게시물번호
+
+COMMENT ON TABLE diseaseBoard IS '질병정보 게시판'; -- 질병정보 게시판
+COMMENT ON COLUMN diseaseBoard.regDate IS '등록일'; -- 등록일
+COMMENT ON COLUMN diseaseBoard.boardNo IS '게시물번호'; -- 게시물번호
+COMMENT ON COLUMN diseaseBoard.subject IS '제목'; -- 제목
+COMMENT ON COLUMN diseaseBoard.content IS '내용'; -- 내용
+COMMENT ON COLUMN diseaseBoard.readCount IS '조회수'; -- 조회수
+
+insert into diseaseboard values(sysdate,'1','제목1','내용1',0);
+insert into diseaseboard values(sysdate,'2','제목2','내용2',0);
+insert into diseaseboard values(sysdate,'3','제목3','내용3',0);
+insert into diseaseboard values(sysdate,'4','제목4','내용4',0);
+insert into diseaseboard values(sysdate,'5','제목5','내용5',0);
+insert into diseaseboard values(sysdate,'6','제목6','내용6',0);
+insert into diseaseboard values(sysdate,'7','제목7','내용7',0);
+insert into diseaseboard values(sysdate,'8','제목8','내용8',0);
+insert into diseaseboard values(sysdate,'9','주사바늘 공포증 극복가능한가?','사실 크게 아프지 않은데 공포가 심하면 안보면 될 듯 싶네요.',0);
+insert into diseaseboard values(sysdate,'10','일교차 심한 봄 감기조심!!','방심하면 걸립니다 감기조심하세요.',0);
+insert into diseaseboard values(sysdate,'11','미세먼지로 인해 발생하는 질병은?','호흡기 질환과 더불어 심하면 암까지 발생할 수 있다고 하니 숨도 쉬지 마세요.',0);
+
+-- 영양정보 게시판
+CREATE TABLE nutritionBoard (
+	regDate   VARCHAR2(10)  NOT NULL, -- 등록일
+	boardNo   VARCHAR2(6)   NOT NULL, -- 게시문번호
+	subject   VARCHAR2(50)  NOT NULL, -- 제목
+	content   VARCHAR2(500) NOT NULL, -- 내용
+	readCount NUMBER        NOT NULL  -- 조회수
+);
+
+-- 영양정보 게시판
+ALTER TABLE nutritionBoard
+ADD CONSTRAINT PK_nutritionBoard -- 영양정보 게시판 기본키
+PRIMARY KEY (regDate, boardNo);-- 등록일 -- 게시문번호
+
+COMMENT ON TABLE nutritionBoard IS '영양정보 게시판'; -- 영양정보 게시판
+COMMENT ON COLUMN nutritionBoard.regDate IS '등록일'; -- 등록일
+COMMENT ON COLUMN nutritionBoard.boardNo IS '게시문번호'; -- 게시문번호
+COMMENT ON COLUMN nutritionBoard.subject IS '제목'; -- 제목
+COMMENT ON COLUMN nutritionBoard.content IS '내용'; -- 내용
+COMMENT ON COLUMN nutritionBoard.readCount IS '조회수'; -- 조회수
+
+insert into nutritionboard values(sysdate,'1','제목1','내용1',0);
+insert into nutritionboard values(sysdate,'2','제목2','내용2',0);
+insert into nutritionboard values(sysdate,'3','제목3','내용3',0);
+insert into nutritionboard values(sysdate,'4','제목4','내용4',0);
+insert into nutritionboard values(sysdate,'5','제목5','내용5',0);
+insert into nutritionboard values(sysdate,'6','제목6','내용6',0);
+insert into nutritionboard values(sysdate,'7','제목7','내용7',0);
+insert into nutritionboard values(sysdate,'8','제목8','내용8',0);
+insert into nutritionboard values(sysdate,'9','제목9','내용9',0);
+insert into nutritionboard values(sysdate,'10','제목10','내용10',0);
+insert into nutritionboard values(sysdate,'11','1달만에 7kg 쪘네요 왜이럴까요?','사람들이 늘 고민하는데 많이 먹고 안 움직이니 당연한 얘기 아니겠어요?? 찌는데는 다 이유가 있습니다.',0);
+
+-- 경력
+CREATE TABLE career  (
+	docNo     VARCHAR2(6)  NOT NULL, -- 의사번호
+	carNum    NUMBER       NOT NULL, -- 경력시퀀스
+	docCareer VARCHAR2(150) NOT NULL  -- 경력
+);
+
+-- 경력
+ALTER TABLE career 
+ADD CONSTRAINT PK_career  -- 경력 기본키
+PRIMARY KEY (docNo,carNum);  -- 의사번호 -- 경력시퀀스
+
+COMMENT ON TABLE career  IS '경력'; -- 경력
+COMMENT ON COLUMN career .docNo IS '의사번호'; -- 의사번호
+COMMENT ON COLUMN career .carNum IS '경력시퀀스'; -- 경력시퀀스
+COMMENT ON COLUMN career .docCareer IS '경력'; -- 경력
+
+insert into career values('doc1',career_seq.nextval,'2016.01 ~현재	중앙정보병원 감염병대응센터장 (감염관리실장 겸직)');
+insert into career values('doc1',career_seq.nextval,'2015.04 ~현재	중앙정보병원 감염내과분과장');
+insert into career values('doc1',career_seq.nextval,'2016.01 ~2012.10 ~현재	중앙정보병원 감염내과 교수');
+insert into career values('doc1',career_seq.nextval,'2015.04 ~ 2016.01	중앙정보병원 기획실 전략기획팀장');
+insert into career values('doc1',career_seq.nextval,'2007.09 ~ 2015.03	중앙정보병원 감염관리실장');
+insert into career values('doc1',career_seq.nextval,'2007.03 ~ 2012.09	중앙정보병원 감염내과 부교수');
+insert into career values('doc1',career_seq.nextval,'2007.01 ~ 2007.02	중앙정보병원 감염내과 임상부교수');
+insert into career values('doc1',career_seq.nextval,'2002.03 ~ 2006.12	한림대학교성심병원 감염관리실장, 항생제위원회 위원장');
+insert into career values('doc1',career_seq.nextval,'2002.03 ~ 2006.12	한림대학교성심병원 감염내과 과장');
+insert into career values('doc1',career_seq.nextval,'2002.03 ~ 2006.12	한림대학교 의과대학 내과학교실 조교수,부교수');
+insert into career values('doc1',career_seq.nextval,'2004.02	미국 Columbia 의대 New York Presbyterian Hospital 연수');
+insert into career values('doc1',career_seq.nextval,'1999.07 ~ 2002.02	미국 Harvard Medical School, Research Fellow');
+insert into career values('doc1',career_seq.nextval,'1997.03 ~ 1999.02	서울아산병원 감염내과 전임의');
+insert into career values('doc1',career_seq.nextval,'1992.03 ~ 1996.02	서울아산병원 내과 전공의 수료');
+insert into career values('doc1',career_seq.nextval,'1991.03 ~ 1992.02	서울대학교 병원 수련의(인턴)수료');
+
+insert into career values('doc2',career_seq.nextval,'2014.09 ~현재	중앙정보병원 마취통증의학과 진료조교수');
+insert into career values('doc2',career_seq.nextval,'2012.11 ~ 2014.05	경기도 장애인구강진료센터 센터장 겸임');
+insert into career values('doc2',career_seq.nextval,'2012.04 ~ 2014.05	단국대학교 죽전치과병원 마취통증의학과 임상조교수');
+insert into career values('doc2',career_seq.nextval,'2008.03 ~ 2012.02	중앙정보병원 마취통증의학과 전임의');
+insert into career values('doc2',career_seq.nextval,'2004.03 ~ 2008.02	중앙정보병원 마취통증의학과 전공의 수료');
+insert into career values('doc2',career_seq.nextval,'2003.03 ~ 2004.02	중앙정보병원 인턴수료');
+
+insert into career values('doc3',career_seq.nextval,'2014.06 ~현재	식품의약품안전평가원 의약품 심사자문단');
+insert into career values('doc3',career_seq.nextval,'2014.05 ~현재	성균관대학교 제10대 교수평의회 의장');
+insert into career values('doc3',career_seq.nextval,'2014.03 ~현재	성균관대학교 교수평의회 의과대학 평의회장');
+insert into career values('doc3',career_seq.nextval,'2013.01 ~현재	Obstetrics base Science 논문 심사위원');
+insert into career values('doc3',career_seq.nextval,'2012.09 ~현재	대한산부인과학회 대의원');
+insert into career values('doc3',career_seq.nextval,'2012.07 ~현재	대한모체태아의학회 이사');
+insert into career values('doc3',career_seq.nextval,'2012.04 ~현재	모자보건학회 이사');
+
+insert into career values('doc4',career_seq.nextval,'2000.04 ~현재	성균관대학교 의과대학 교수');
+insert into career values('doc4',career_seq.nextval,'1995.04 ~현재	중앙정보병원 신경과 전문의 뇌졸중 및 두통 진료담당');
+insert into career values('doc4',career_seq.nextval,'2015.03 ~ 2015.12	Stroke and Related Disorders News (Elsevier 출판사) 편집위원장');
+insert into career values('doc4',career_seq.nextval,'2014.03 ~ 2015.03	중앙정보병원 심장뇌혈관병원 운영지원실장');
+insert into career values('doc4',career_seq.nextval,'2009.09 ~ 2013.07	중앙정보병원 뇌신경센터장');
+
+insert into career values('doc5',career_seq.nextval,'2002.04 ~현재	성균관의대 중앙정보병원 소아청소년과 교수');
+insert into career values('doc5',career_seq.nextval,'1994.04 ~현재	중앙정보병원 소아청소년과 전문의');
+insert into career values('doc5',career_seq.nextval,'1997.03 ~ 2002.04	성균관의대 중앙정보병원 소아과 부교수');
+insert into career values('doc5',career_seq.nextval,'1992.03 ~ 1994.03	미국 남가주대학교 신생아학 연구전임의');
+insert into career values('doc5',career_seq.nextval,'1990.03 ~ 1992.02	강남 차병원 소아과장');
+
+insert into career values('doc6',career_seq.nextval,'2016.01 ~현재	중앙정보병원 암병원 간암센터장');
+insert into career values('doc6',career_seq.nextval,'2002.04 ~현재	성균관대학교 중앙정보병원 교수');
+insert into career values('doc6',career_seq.nextval,'2005.09 ~ 2015.02	중앙정보병원 간암센터장');
+insert into career values('doc6',career_seq.nextval,'2010.01 ~ 2011.11	대한간학회 총무이사');
+insert into career values('doc6',career_seq.nextval,'2004.12 ~ 2009.12	중앙정보병원 외래부장');
+insert into career values('doc6',career_seq.nextval,'2005.09 ~ 2007.08	중앙정보병원 소화기연구소장');
+insert into career values('doc6',career_seq.nextval,'1999.03 ~ 2005.08	중앙정보병원 소화기내과장');
+insert into career values('doc6',career_seq.nextval,'1997.03 ~ 2002.03	성균관대학교 중앙정보병원 부교수');
+
+insert into career values('doc7',career_seq.nextval,'2018.03 ~현재	중앙정보병원 임상조교수');
+insert into career values('doc7',career_seq.nextval,'2017.03 ~ 2018.02	중앙정보병원 임상전임강사');
+insert into career values('doc7',career_seq.nextval,'2015.03 ~ 2017.02	순천향대학교 서울병원 조교수');
+insert into career values('doc7',career_seq.nextval,'2014.03 ~ 2015.02	순천향대학교 서울병원 임상조교수');
+insert into career values('doc7',career_seq.nextval,'2013.03 ~ 2014.02	순천향대학교 서울병원 임상강사');
+
+insert into career values('doc8',career_seq.nextval,'2007.10 ~현재	성균관대학교 의과대학 내과학교실 교수');
+insert into career values('doc8',career_seq.nextval,'1994.10 ~현재	중앙정보병원 감염내과 전문의');
+insert into career values('doc8',career_seq.nextval,'2005.09 ~ 2015.03	중앙정보병원 감염내과 과장');
+insert into career values('doc8',career_seq.nextval,'2001.10 ~ 2007.09	성균관대학교 의과대학 내과학교실 부교수');
+insert into career values('doc8',career_seq.nextval,'2003.03 ~ 2005.08	중앙정보병원 감염관리 실장');
+insert into career values('doc8',career_seq.nextval,'1997.03 ~ 2001.09	성균관대학교 의과대학 내과학교실 조교수');
+
+insert into career values('doc9',career_seq.nextval,'2013.04 ~현재	성균관 의대 중앙정보병원 감염내과 부교수');
+insert into career values('doc9',career_seq.nextval,'2009.03 ~ 2013.03	성균관 의대 중앙정보병원 감염내과 조교수');
+insert into career values('doc9',career_seq.nextval,'2007.09 ~ 2009.02	미국 미네소타주 Mayo clinic 연수');
+insert into career values('doc9',career_seq.nextval,'2007.05 ~ 2009.02	중앙정보병원 감염내과 임상 조교수');
+insert into career values('doc9',career_seq.nextval,'2005.05 ~ 2007.04	국군 수도병원 감염내과 과장 (군의관)');
+
+insert into career values('doc10',career_seq.nextval,'2007.05 ~ 2009.02	중앙정보병원 감염내과 임상 조교수');
+insert into career values('doc10',career_seq.nextval,'2005.05 ~ 2007.04	국군 수도병원 감염내과 과장 (군의관)');
+
+insert into career values('doc11',career_seq.nextval,'2009.09 ~현재	중앙정보병원 당뇨병센터 센터장');
+insert into career values('doc11',career_seq.nextval,'2002.04 ~현재	성균관의과대학 내과 교수');
+insert into career values('doc11',career_seq.nextval,'1994.08 ~현재	중앙정보병원 내분비-대사내과 전문의');
+
+insert into career values('doc12',career_seq.nextval,'2009.09 ~현재	중앙정보병원 당뇨병센터 센터장');
+insert into career values('doc12',career_seq.nextval,'2002.04 ~현재	성균관의과대학 내과 교수');
+insert into career values('doc12',career_seq.nextval,'1994.08 ~현재	중앙정보병원 내분비-대사내과 전문의');
+insert into career values('doc12',career_seq.nextval,'2004.12 ~ 2009.04	중앙정보병원 건강의학센터장');
+insert into career values('doc12',career_seq.nextval,'1999.03 ~ 2005.08	중앙정보병원 내분비-대사내과 과장');
+insert into career values('doc12',career_seq.nextval,'1997.03 ~ 2002.03	성균관의과대학 내과 부교수');
+
+insert into career values('doc13',career_seq.nextval,'2002.04 ~현재	성균관대학교 의과대학 내과 교수');
+insert into career values('doc13',career_seq.nextval,'1994.04 ~현재	중앙정보병원 내분비내과 근무');
+insert into career values('doc13',career_seq.nextval,'2013.09 ~ 2017.03	성균관대학교 의과대학 내과학교실 주임교수');
+insert into career values('doc13',career_seq.nextval,'2013.08 ~ 2017.03	중앙정보병원 내과 과장');
+insert into career values('doc13',career_seq.nextval,'2009.09 ~ 2013.07	중앙정보병원 외래부장');
+
+insert into career values('doc14',career_seq.nextval,'2017.04 ~현재	성균관대학교 의과대학 내과학교실 주임교수');
+insert into career values('doc14',career_seq.nextval,'2017.04 ~현재	중앙정보병원 내과 과장');
+insert into career values('doc14',career_seq.nextval,'2007.10 ~현재	성균관대학교 의과대학 내과 교수');
+insert into career values('doc14',career_seq.nextval,'1994.05 ~현재	중앙정보병원 내분비-대사 내과 전문의');
+
+insert into career values('doc15',career_seq.nextval,'2002.04 ~현재	성균관대학교 의과대학 내과 교수');
+insert into career values('doc15',career_seq.nextval,'1994.04 ~현재	중앙정보병원 내분비내과 근무');
+insert into career values('doc15',career_seq.nextval,'2013.09 ~ 2017.03	성균관대학교 의과대학 내과학교실 주임교수');
+insert into career values('doc15',career_seq.nextval,'2013.08 ~ 2017.03	중앙정보병원 내과 과장');
+insert into career values('doc15',career_seq.nextval,'2009.09 ~ 2013.07	중앙정보병원 외래부장');
+insert into career values('doc15',career_seq.nextval,'2009.09 ~ 2011.11	중앙정보병원 내분비-대사 내과 과장');
+
+insert into career values('doc16',career_seq.nextval,'2017.04 ~현재	중앙정보병원 내분비-대사 내과 과장');
+insert into career values('doc16',career_seq.nextval,'2014.04 ~현재	성균관대학교 의과대학 내과 교수');
+insert into career values('doc16',career_seq.nextval,'2008.02 ~현재	중앙정보병원 내분비대사내과 전문의');
+insert into career values('doc16',career_seq.nextval,'2016.03 ~ 2017.03	중앙정보병원 SMC파트너즈센터 부센터장');
+insert into career values('doc16',career_seq.nextval,'2008.03 ~ 2014.03	성균관대학교 의과대학 내과 부교수');
+
+insert into career values('doc17',career_seq.nextval,'2015.10 ~현재	중앙정보병원 병원장');
+insert into career values('doc17',career_seq.nextval,'2002.10 ~현재	성균관대학교 의과대학 내과학교실 교수');
+insert into career values('doc17',career_seq.nextval,'1994.01 ~현재	중앙정보병원 호흡기내과 전문의');
+insert into career values('doc17',career_seq.nextval,'2011.12 ~ 2012.02	중앙정보병원 기획실장');
+insert into career values('doc17',career_seq.nextval,'2011.01 ~ 2011.11	성균관대학교 의과대학 학장');
+insert into career values('doc17',career_seq.nextval,'2008.08 ~ 2011.01	중앙정보병원 기획실장');
+
+insert into career values('doc18',career_seq.nextval,'2007.10 ~현재	성균관대학교 의과대학 내과 교수');
+insert into career values('doc18',career_seq.nextval,'2009.08 ~ 2015.03	중앙정보병원 호흡기내과 과장');
+insert into career values('doc18',career_seq.nextval,'2001.03 ~ 2007.09	성균관대학교 의과대학 내과 부교수');
+insert into career values('doc18',career_seq.nextval,'2000.05 ~ 2002.04	미국 University of Iowa 연수');
+insert into career values('doc18',career_seq.nextval,'1997.03 ~ 2001.02	성균관대학교 의과대학 내과 조교수');
+
+insert into career values('doc19',career_seq.nextval,'2017.04 ~현재	중앙정보병원 호흡기내과분과장');
+insert into career values('doc19',career_seq.nextval,'2013.08 ~현재	중앙정보병원 중증치료센터장');
+insert into career values('doc19',career_seq.nextval,'2013.01 ~현재	중앙정보병원 중환자의학과 과장');
+insert into career values('doc19',career_seq.nextval,'2009.10 ~현재	성균관대학교 의과대학 내과학교실 교수');
+insert into career values('doc19',career_seq.nextval,'2005.09 ~현재	중환자실 실장');
+insert into career values('doc19',career_seq.nextval,'2003.10 ~ 2009.09	성균관대학교 의과대학 내과학교실 부교수');
+
+insert into career values('doc20',career_seq.nextval,'2014.04 ~현재	성균관대학교 의과대학 내과학교실 교수');
+insert into career values('doc20',career_seq.nextval,'2015.04 ~ 2016.06	중앙정보병원 호흡기내과 과장');
+insert into career values('doc20',career_seq.nextval,'2008.04 ~ 2014.03	성균관대학교 의과대학 내과학교실 부교수');
+insert into career values('doc20',career_seq.nextval,'2009.08 ~ 2010.07	미국 콜로라도 덴버, National Jewish Medical and Research Center 연수');
+insert into career values('doc20',career_seq.nextval,'2004.03 ~ 2008.03	성균관대학교 의과대학 내과학교실 조교수');
+insert into career values('doc20',career_seq.nextval,'2003.09 ~ 2004.02	성균관대학교 의과대학 내과학교실 임상조교수');
+
+insert into career values('doc21',career_seq.nextval,'2013.04 ~현재	중앙정보병원 호흡기내과 부교수');
+insert into career values('doc21',career_seq.nextval,'2009.03 ~ 2013.03	중앙정보병원 호흡기내과 조교수');
+insert into career values('doc21',career_seq.nextval,'2008.03 ~ 2009.02	중앙정보병원 호흡기내과 임상조교수');
+insert into career values('doc21',career_seq.nextval,'2007.05 ~ 2008.02	중앙정보병원 호흡기내과 임상강사');
+insert into career values('doc21',career_seq.nextval,'2006.05 ~ 2007.04	서울대학교병원 호흡기내과 임상강사');
+
+insert into career values('doc22',career_seq.nextval,'2009.09 ~ 2015.03	중앙정보병원 커뮤니케이션실장');
+insert into career values('doc22',career_seq.nextval,'2011.11 ~ 2013.07	중앙정보병원 성형외과 과장');
+insert into career values('doc22',career_seq.nextval,'2007.02 ~ 2009.08	중앙정보병원 교육수련부 부장');
+insert into career values('doc22',career_seq.nextval,'2002.03 ~ 2007.08	성균관의대 성형외과 주임교수');
+insert into career values('doc22',career_seq.nextval,'2001.05 ~ 2007.08	중앙정보병원 성형외과 과장');
+insert into career values('doc22',career_seq.nextval,'1998.04 ~ 2001.05	인제대학교 의과대학 성형외과 부교수');
+insert into career values('doc22',career_seq.nextval,'1996.09 ~ 2001.05	인제대 의과대학 서울백병원 성형외과 과장');
+
+insert into career values('doc23',career_seq.nextval,'2013.09 ~현재	성균관대학교 의과대학 성형외과학교실 주임교수');
+insert into career values('doc23',career_seq.nextval,'2013.08 ~현재	성균관대학교 의과대학 중앙정보병원 성형외과 과장');
+insert into career values('doc23',career_seq.nextval,'2009.03 ~현재	성균관대학교 의과대학교 성형외과 교수');
+insert into career values('doc23',career_seq.nextval,'2012.03 ~ 2015.03	중앙정보병원 대외협력실장');
+insert into career values('doc23',career_seq.nextval,'2007.09 ~ 2011.11	중앙정보병원 성형외과 과장');
+
+insert into career values('doc24',career_seq.nextval,'2017.10 ~현재	성균관대학교 의과대학 교수');
+insert into career values('doc24',career_seq.nextval,'2004.03 ~현재	성균관대학교 의과대학 조교수');
+insert into career values('doc24',career_seq.nextval,'2002.03 ~현재	중앙정보병원 성형외과 전문의');
+insert into career values('doc24',career_seq.nextval,'2011.10 ~ 2017.09	성균관대학교 의과대학 부교수');
+insert into career values('doc24',career_seq.nextval,'2007.1201 ~ 2009.05	M.D.Anderson Cancer Center 성형외과 교환교수');
+
+insert into career values('doc25',career_seq.nextval,'2017.04 ~현재	성균관대학교 의과대학 중앙정보병원 성형외과 교수');
+insert into career values('doc25',career_seq.nextval,'2011.03 ~ 2017.03	성균관대학교 의과대학 중앙정보병원 성형외과 부교수');
+insert into career values('doc25',career_seq.nextval,'2009.03 ~ 2011.02	성균관대학교 의과대학 중앙정보병원 성형외과 조교수');
+insert into career values('doc25',career_seq.nextval,'2007.05 ~ 2009.02	중앙정보병원 성형외과 임상조교수');
+
+insert into career values('doc26',career_seq.nextval,'2014.04 ~현재	성균관대학교 의과대학 중앙정보병원 성형외과 부교수');
+insert into career values('doc26',career_seq.nextval,'2014.07 ~ 2015.07	미국보스턴 하버드의과대학 부설 Boston Children Hospital 연수');
+insert into career values('doc26',career_seq.nextval,'2008.03 ~ 2014.03	성균관대학교 의과대학 중앙정보병원 성형외과 조교수');
+insert into career values('doc26',career_seq.nextval,'2010.01 ~ 2010.01	대만장궁병원 두개안면센터 단기연수');
+insert into career values('doc26',career_seq.nextval,'2003.03 ~ 2008.02	중앙정보병원 성형외과 임상강사');
+
+insert into career values('doc27',career_seq.nextval,'2002.04 ~현재	성균관의대 중앙정보병원 소아청소년과 교수');
+insert into career values('doc27',career_seq.nextval,'1994.04 ~현재	중앙정보병원 소아청소년과 전문의');
+insert into career values('doc27',career_seq.nextval,'2007.09 ~ 2009.08	성균관의대 중앙정보병원 소아청소년과 과장, 주임교수');
+insert into career values('doc27',career_seq.nextval,'1997.03 ~ 2002.04	성균관의대 중앙정보병원 소아과 부교수');
+insert into career values('doc27',career_seq.nextval,'1992.03 ~ 1994.03	미국 남가주대학교 신생아학 연구전임의');
+
+insert into career values('doc28',career_seq.nextval,'2017.04 ~현재	중앙정보병원 커뮤니케이션실장');
+insert into career values('doc28',career_seq.nextval,'2003.04 ~현재	성균관대학교 의과대학 중앙정보병원 소아청소년과 교수');
+insert into career values('doc28',career_seq.nextval,'1994.03 ~현재	중앙정보병원 소아과 전문의');
+insert into career values('doc28',career_seq.nextval,'2013.08 ~ 2017.03	성균관대학교 의과대학 소아과학교실 주임교수 및 중앙정보병원 소아청소년과장');
+insert into career values('doc28',career_seq.nextval,'2011.11 ~ 2017.03	중앙정보병원 인재기획실장');
+insert into career values('doc28',career_seq.nextval,'2009.08 ~ 2011.11	성균관대학교 의과대학 소아과학교실 주임교수 및 중앙정보병원 소아청소년과장');
+
+insert into career values('doc29',career_seq.nextval,'2001.04 ~현재	성균관의과대학교 교수');
+insert into career values('doc29',career_seq.nextval,'2001.01 ~현재	임상의학연구소 종합연구부장');
+insert into career values('doc29',career_seq.nextval,'2013.08 ~ 2017.03	중앙정보병원 소아청소년센터장');
+insert into career values('doc29',career_seq.nextval,'2011.09 ~ 2013.08	성균관대학교 의과대학 소아과학교실 주임교수');
+insert into career values('doc29',career_seq.nextval,'2011.11 ~ 2013.07	중앙정보병원 소아청소년과장');
+insert into career values('doc29',career_seq.nextval,'2003.03 ~ 2005.02	임상의학연구소 종합실험부 센터장');
+
+insert into career values('doc30',career_seq.nextval,'2004.09 ~현재	중앙정보병원 소아청소년과 진료교수');
+insert into career values('doc30',career_seq.nextval,'2007.09 ~ 2011.11	중앙정보병원 심장소아청소년과 과장');
+insert into career values('doc30',career_seq.nextval,'1997.09 ~ 2004.08	성균관대학교 의과대학 중앙정보병원 소아청소년과 조교수');
+insert into career values('doc30',career_seq.nextval,'2001.09 ~ 2002.08	캐나다 The Hospital for Sick Children 연수');
+insert into career values('doc30',career_seq.nextval,'1994.04 ~ 1997.08	중앙정보병원 소아청소년과 전문의');
+
+insert into career values('doc31',career_seq.nextval,'2002.03 ~현재	성균관대학교 의과대학 외과학교실 교수');
+insert into career values('doc31',career_seq.nextval,'1999.03 ~현재	IRB위원장');
+insert into career values('doc31',career_seq.nextval,'1994.06 ~현재	중앙정보병원 외과 전문의');
+insert into career values('doc31',career_seq.nextval,'2012.03 ~ 2015.03	중앙정보병원 외과 과장');
+insert into career values('doc31',career_seq.nextval,'2012.03 ~ 2015.03	성균관대학교 외과대학 외과학 주임교수');
+insert into career values('doc31',career_seq.nextval,'2009.09 ~ 2013.07	성균관대학교 의과대학 중앙정보병원 소아청소년진료센터장');
+insert into career values('doc31',career_seq.nextval,'2001.03 ~ 2009.08	성균관대학교 의과대학 중앙정보병원 장기이식센터장');
+
+insert into career values('doc32',career_seq.nextval,'2002.03 ~현재	중앙정보병원 의과대학 신경과 교수');
+insert into career values('doc32',career_seq.nextval,'1994.09 ~현재	중앙정보병원 뇌전증-수면센터 Director');
+insert into career values('doc32',career_seq.nextval,'1997.03 ~ 2002.02	성균관대학교 의과대학 신경과 부교수');
+insert into career values('doc32',career_seq.nextval,'1994.09	미국 임상신경생리학 전문의 자격 취득');
+
+insert into career values('doc33',career_seq.nextval,'2013.09 ~현재	성균관대학교 의과대학 신경과학 주임교수');
+insert into career values('doc33',career_seq.nextval,'2013.08 ~현재	중앙정보병원 신경과 과장');
+insert into career values('doc33',career_seq.nextval,'2005.04 ~현재	성균관대학교 의과대학 교수(신경과)');
+insert into career values('doc33',career_seq.nextval,'1994.05 ~현재	중앙정보병원 신경과 전문의');
+insert into career values('doc33',career_seq.nextval,'1997.03 ~ 2005.03	성균관대학교 의과대학 조교수 (신경과)');
+
+insert into career values('doc34',career_seq.nextval,'2013.09 ~현재	성균관대학교 의과대학 신경과학 주임교수');
+insert into career values('doc34',career_seq.nextval,'2013.08 ~현재	중앙정보병원 신경과 과장');
+insert into career values('doc34',career_seq.nextval,'2005.04 ~현재	성균관대학교 의과대학 교수(신경과)');
+insert into career values('doc34',career_seq.nextval,'1994.05 ~현재	중앙정보병원 신경과 전문의');
+insert into career values('doc34',career_seq.nextval,'1997.03 ~ 2005.03	성균관대학교 의과대학 조교수 (신경과)');
+insert into career values('doc34',career_seq.nextval,'2000.09 ~ 2002.08	미국 University of Alabama at Birmingham(UAB) 연수');
+
+insert into career values('doc35',career_seq.nextval,'2005.05 ~현재	성균관대학교 의과대학 외과학 교실 교수 및 중앙정보병원 외과 교수');
+insert into career values('doc35',career_seq.nextval,'2015.04 ~ 2018.03	성균관대학교 의과대학 외과학 교실 주임교수');
+insert into career values('doc35',career_seq.nextval,'2015.04 ~ 2018.03	성균관대학교 의과대학 중앙정보병원 외과과장');
+insert into career values('doc35',career_seq.nextval,'2013.07 ~ 2015.03	성균관대학교 의과대학 중앙정보병원 소화기외과분과장');
+insert into career values('doc35',career_seq.nextval,'2013.04 ~ 2015.03	성균관대학교 의과대학 중앙정보병원 췌담도암센터장');
+
+insert into career values('doc36',career_seq.nextval,'2017.04 ~현재	중앙정보병원 암병원 췌담도암센터장');
+insert into career values('doc36',career_seq.nextval,'2017.04 ~현재	중앙정보병원 간담췌외과 분과장');
+insert into career values('doc36',career_seq.nextval,'2007.10 ~현재	성균관의대 교수');
+insert into career values('doc36',career_seq.nextval,'1995.09 ~현재	중앙정보병원 외과 전문의');
+insert into career values('doc36',career_seq.nextval,'2001.03 ~ 2007.09	성균관의대 부교수');
+
+insert into career values('doc37',career_seq.nextval,'2016.12 ~현재	재단법인 인성의과학연구재단 이사');
+insert into career values('doc37',career_seq.nextval,'2016.05 ~현재	성균관대학교 의무부총장');
+insert into career values('doc37',career_seq.nextval,'1997.03 ~현재	성균관의대 신경외과학교실 교수');
+insert into career values('doc37',career_seq.nextval,'1994.03 ~현재	중앙정보병원 신경외과 전문의');
+insert into career values('doc37',career_seq.nextval,'2013.02 ~ 2016.01	중앙정보병원 건강보험자문 실차장');
+insert into career values('doc37',career_seq.nextval,'2007.02 ~ 2011.02	성균관대학교 의과대학 학장/ 의학전문대학원 원장');
+
+insert into career values('doc38',career_seq.nextval,'2001.04 ~현재	성균관의대 신경외과학교실 교수');
+insert into career values('doc38',career_seq.nextval,'1996.03 ~현재	중앙정보병원 신경외과 전문의');
+insert into career values('doc38',career_seq.nextval,'2007.02 ~ 2011.11	성균관의대 신경외과학교실 주임교수');
+insert into career values('doc38',career_seq.nextval,'2007.02 ~ 2011.11	중앙정보병원 신경외과 과장');
+insert into career values('doc38',career_seq.nextval,'2006.05 ~ 2006.07	독일 말부르크 의과대학 방문교수');
+insert into career values('doc38',career_seq.nextval,'2001.04 ~ 2001.07	독일 하노버 의과대학 방문교수');
+
+insert into career values('doc39',career_seq.nextval,'2012.09 ~현재	대한신경외과학회 전산정보 상임이사');
+insert into career values('doc39',career_seq.nextval,'2011.11 ~현재	중앙정보병원 신경외과 과장');
+insert into career values('doc39',career_seq.nextval,'2011.11 ~현재	성균관의대 신경외과학교실 주임교수');
+insert into career values('doc39',career_seq.nextval,'2010.03 ~현재	대한신경중환자의학회 상임이사, 부회장');
+insert into career values('doc39',career_seq.nextval,'2002.04 ~현재	성균관의대 신경외과학교실 교수');
+
+insert into career values('doc40',career_seq.nextval,'2002.10 ~현재	성균관의대 신경외과학교실 교수');
+insert into career values('doc40',career_seq.nextval,'1994.08 ~현재	중앙정보병원 신경외과 전문의 (뇌혈관질환/뇌전증수술)');
+insert into career values('doc40',career_seq.nextval,'2007.10 ~ 2007.12	일본 Kyushu University 방문 교수');
+insert into career values('doc40',career_seq.nextval,'1997.03 ~ 2002.09	성균관의대 신경외과학교실 부교수');
+
+insert into career values('doc41',career_seq.nextval,'2008.03 ~현재	중앙정보병원 신경외과 교수');
+insert into career values('doc41',career_seq.nextval,'2003.03 ~ 2008.02	중앙정보병원 신경외과 임상교수');
+insert into career values('doc41',career_seq.nextval,'1998.04 ~ 2003.02	경상대학교 의과대학 부교수');
+insert into career values('doc41',career_seq.nextval,'2002.04 ~ 2002.05	일본 큐슈 척추 손상 센터 (교환교수)');
+insert into career values('doc41',career_seq.nextval,'1997.10 ~ 1999.09	미국 St. Louis 대학교 (교환교수)');
+insert into career values('doc41',career_seq.nextval,'1994.04 ~ 1998.03	경상대학교 의과대학 조교수');
+
+insert into career values('doc42',career_seq.nextval,'2002.04 ~현재	성균관대학교 의과대학 안과 교수');
+insert into career values('doc42',career_seq.nextval,'1994.03 ~현재	중앙정보병원 안과 전문의');
+insert into career values('doc42',career_seq.nextval,'2003.03 ~ 2009.08	성균관 의대 안과 주임교수,중앙정보병원 안과 과장');
+insert into career values('doc42',career_seq.nextval,'1997.03 ~ 2002.04	성균관대학교 의과대학 안과 부교수');
+insert into career values('doc42',career_seq.nextval,'2001.04 ~ 2001.05	미국 Massachusetts Eye ear Infirmary 연수');
+
+insert into career values('doc43',career_seq.nextval,'2002.04 ~현재	성균관대학교 의과대학 안과 교수');
+insert into career values('doc43',career_seq.nextval,'2009.09 ~ 2011.11	성균관대학교 의과대학 안과 주임교수');
+insert into career values('doc43',career_seq.nextval,'1997.03 ~ 2002.04	성균관대학교 의과대학 안과 부교수');
+insert into career values('doc43',career_seq.nextval,'1994.06 ~ 1997.02	중앙정보병원 안과 전문의');
+
+insert into career values('doc44',career_seq.nextval,'2007.04 ~현재	성균관대학교 의과대학 안과 교수');
+insert into career values('doc44',career_seq.nextval,'2011.11 ~ 2015.03	중앙정보병원 안과 과장, 주임교수');
+insert into career values('doc44',career_seq.nextval,'2001.04 ~ 2007.03	성균관대학교 의과대학 안과 부교수');
+insert into career values('doc44',career_seq.nextval,'2000.10 ~ 2001.03	중앙정보병원 안과 전문의');
+insert into career values('doc44',career_seq.nextval,'1999.08 ~ 2000.09	충북대학교병원 안과 과장');
+insert into career values('doc44',career_seq.nextval,'1993.05 ~ 2000.09	충북대학교 의과대학 안과 (전임강사 ~ 부교수)');
+
+insert into career values('doc45',career_seq.nextval,'2015.03 ~현재	중앙정보병원 안과 과장, 주임교수');
+insert into career values('doc45',career_seq.nextval,'2015.01 ~현재	보건복지부 건강보험분쟁조정위원회 위원');
+insert into career values('doc45',career_seq.nextval,'2013.08 ~현재	중앙정보병원 진료운영실장');
+insert into career values('doc45',career_seq.nextval,'2009.09 ~현재	보건복지부 장애판정위원회 위원');
+insert into career values('doc45',career_seq.nextval,'2008.04 ~현재	성균관대학교 의과대학 안과 교수');
+insert into career values('doc45',career_seq.nextval,'2008.01 ~현재	식품의약품안전청 중양약사심의위원회 전문가');
+
+insert into career values('doc46',career_seq.nextval,'2009.10 ~현재	성균관대학교 의과대학 안과 교수');
+insert into career values('doc46',career_seq.nextval,'1997.03 ~현재	중앙정보병원 안과 전문의');
+insert into career values('doc46',career_seq.nextval,'2003.10 ~ 2009.09	성균관대학교 의과대학 안과 부교수');
+insert into career values('doc46',career_seq.nextval,'1999.10 ~ 2003.09	성균관대학교 의과대학 안과 조교수');
+insert into career values('doc46',career_seq.nextval,'2001.03 ~ 2003.02	미국 NIH National Eye Institute, Postdoctoral Fellow');
+
+insert into career values('doc47',career_seq.nextval,'2002.03 ~현재	성균관의대 영상의학과 교수');
+insert into career values('doc47',career_seq.nextval,'2001.03 ~ 2004.09	삼성 임상의학연구센터 영상의학연구센터장');
+insert into career values('doc47',career_seq.nextval,'1994.06 ~ 2003.03	중앙정보병원 영상의학과 신경방사선 디렉터');
+insert into career values('doc47',career_seq.nextval,'2001.03 ~ 2003.02	성균관의대 중앙정보병원 영상의학과 과장');
+insert into career values('doc47',career_seq.nextval,'1997.03 ~ 2002.02	성균관의대 부교수');
+
+insert into career values('doc48',career_seq.nextval,'2015.0101 ~현재	성균관대학교 삼성융합의과학원장');
+insert into career values('doc48',career_seq.nextval,'2002.08 ~현재	성균관의대 중앙정보병원 영상의학과 교수');
+insert into career values('doc48',career_seq.nextval,'1994.07 ~현재	성균관의대 중앙정보병원 영상의학과 전문의');
+insert into career values('doc48',career_seq.nextval,'2010.01 ~ 2011.11	중앙정보병원 기획조정처장');
+insert into career values('doc48',career_seq.nextval,'2008.08 ~ 2009.12	중앙정보병원 진료부원장');
+
+insert into career values('doc49',career_seq.nextval,'2014.0101 ~현재	성균관대학교 의과대학장(겸)의학전문대학원장');
+insert into career values('doc49',career_seq.nextval,'2002.04 ~현재	성균관의대 중앙정보병원 영상의학과 교수');
+insert into career values('doc49',career_seq.nextval,'1994.03 ~현재	성균관의대 중앙정보병원 영상의학과 전문의');
+insert into career values('doc49',career_seq.nextval,'2008.08 ~ 2011.10	성균관의대 중앙정보병원 영상의학과 과장');
+
+insert into career values('doc50',career_seq.nextval,'2004.03 ~현재	성균관대학교 의과대학 영상의학과 교수');
+insert into career values('doc50',career_seq.nextval,'2000.10 ~ 2004.02	인하대학교 의과대학 방사선과학교실 교수');
+insert into career values('doc50',career_seq.nextval,'1997.03 ~ 2000.09	인하대학교 의과대학 방사선과학교실 부교수');
+insert into career values('doc50',career_seq.nextval,'1995.10 ~ 1997.02	경상대학교 의과대학 진단방사선과학교실 부교수');
+insert into career values('doc50',career_seq.nextval,'1991.04 ~ 1995.09	경상대학교 의과대학 진단방사선과학교실 조교수');
+
+insert into career values('doc51',career_seq.nextval,'2009.0901 ~현재	심장혈관센터 혈관질환팀장');
+insert into career values('doc51',career_seq.nextval,'2002.09 ~현재	성균관의대 중앙정보병원 영상의학과 교수');
+insert into career values('doc51',career_seq.nextval,'1996.04 ~현재	성균관의대 중앙정보병원 영상의학과 전문의');
+insert into career values('doc51',career_seq.nextval,'2011.1101 ~ 2015.04	성균관의대 중앙정보병원 영상의학과장');
+
+insert into career values('doc52',career_seq.nextval,'2002.03 ~현재	성균관대학교 의과대학 외과학교실 교수');
+insert into career values('doc52',career_seq.nextval,'1999.03 ~현재	IRB위원장');
+insert into career values('doc52',career_seq.nextval,'1994.06 ~현재	중앙정보병원 외과 전문의');
+insert into career values('doc52',career_seq.nextval,'2012.03 ~ 2015.03	중앙정보병원 외과 과장');
+insert into career values('doc52',career_seq.nextval,'2012.03 ~ 2015.03	성균관대학교 외과대학 외과학 주임교수');
+insert into career values('doc52',career_seq.nextval,'2009.09 ~ 2013.07	성균관대학교 의과대학 중앙정보병원 소아청소년진료센터장');
+insert into career values('doc52',career_seq.nextval,'2001.03 ~ 2009.08	성균관대학교 의과대학 중앙정보병원 장기이식센터장');
+
+insert into career values('doc53',career_seq.nextval,'2017.04 ~현재	중앙정보병원 소아청소년센터장');
+insert into career values('doc53',career_seq.nextval,'2009.09 ~현재	성균관대학교 의과대학 중앙정보병원 소아외과 과장');
+insert into career values('doc53',career_seq.nextval,'2008.10 ~현재	성균관대학교 의과대학 외과학 교수');
+insert into career values('doc53',career_seq.nextval,'2001.04 ~현재	성균관대학교 의과대학 중앙정보병원 일반외과 전문의');
+
+insert into career values('doc54',career_seq.nextval,'2002.03 ~ 2008.09	성균관대학교 의과대학 외과학 부교수');
+insert into career values('doc54',career_seq.nextval,'2006.05 ~ 2007.04	미국 University of Alabama in Birmingham, 소아복강경수술');
+insert into career values('doc54',career_seq.nextval,'2000.10 ~ 2001.04	미국보건원(NIH) 연구원');
+insert into career values('doc54',career_seq.nextval,'1998.09 ~ 2001.04	인하대학교 의과대학 의학2과 조교수');
+
+insert into career values('doc55',career_seq.nextval,'2015.03 ~현재	중앙정보병원 소아외과 조교수');
+insert into career values('doc55',career_seq.nextval,'2013.03 ~ 2014.05	중앙정보병원 소아외과 임상전임강사');
+insert into career values('doc55',career_seq.nextval,'2011.03 ~ 2013.02	중앙정보병원 이식외과 임상강사');
+insert into career values('doc55',career_seq.nextval,'2008.03 ~ 2011.02	공중보건의사');
+insert into career values('doc55',career_seq.nextval,'2004.03 ~ 2008.02	중앙정보병원 외과 전공의 과정 수료');
+insert into career values('doc55',career_seq.nextval,'2003.03 ~ 2004.02	중앙정보병원 인턴 과정 수료');
+
+insert into career values('doc56',career_seq.nextval,'1999.03 ~ 2009.08	성균관대학교 의과대학 중앙정보병원 소아외과 과장');
+insert into career values('doc56',career_seq.nextval,'1999.03 ~ 2005.06	성균관대학교 의과대학 중앙정보병원 임상시험센터장');
+insert into career values('doc56',career_seq.nextval,'1997.03 ~ 2002.03	성균관대학교 의과대학 외과학교실 부교수');
+insert into career values('doc56',career_seq.nextval,'1995.12 ~ 1996.03	미국 존스홉킨스의과대학 이식외과 연수');
+insert into career values('doc56',career_seq.nextval,'1991.09 ~ 1994.05	미국 하버드의과대학 외과 전임의');
+
+insert into career values('doc57',career_seq.nextval,'2007.12 ~현재	중앙정보병원 외과 교수');
+insert into career values('doc57',career_seq.nextval,'2012.03 ~ 2013.08	중앙정보병원 연구기획부장');
+insert into career values('doc57',career_seq.nextval,'2011.11 ~ 2013.07	중앙정보병원 소화기외과분과장');
+insert into career values('doc57',career_seq.nextval,'2011.03 ~ 2012.02	중앙정보병원 암센터 운영지원실장');
+
+insert into career values('doc58',career_seq.nextval,'2012.09 ~현재	성균관대학교 의과대학 중앙정보병원 외과 부교수');
+insert into career values('doc58',career_seq.nextval,'2015.03 ~ 2016.02	Memorial Sloan-Kettering Cancer Center 연수');
+insert into career values('doc58',career_seq.nextval,'2007.07 ~ 2012.08	국립암센터 위암연구과 선임연구원');
+insert into career values('doc58',career_seq.nextval,'2003.03 ~ 2012.08	국립암센터 위암센터 전문의');
+
+insert into career values('doc59',career_seq.nextval,'2015.03 ~현재	성균관대학교 의과대학 중앙정보병원 중환자의학과 부교수');
+insert into career values('doc59',career_seq.nextval,'2012.07 ~현재	중앙정보병원 기획담당 교수');
+insert into career values('doc59',career_seq.nextval,'2011.12 ~현재	중앙정보병원 중증치료센터 부센터장');
+insert into career values('doc59',career_seq.nextval,'2013.03 ~ 2016.08	중앙정보병원 중환자의학과 의국장');
+insert into career values('doc59',career_seq.nextval,'2013.03 ~ 2015.02	성균관대학교 의과대학 중앙정보병원 중환자의학과 임상부교수');
+insert into career values('doc59',career_seq.nextval,'2010.03 ~ 2013.02	성균관대학교 의과대학 중앙정보병원 외과 임상조교수');
+
+insert into career values('doc60',career_seq.nextval,'2015.03 ~현재	성균관대학교 의과대학 중앙정보병원 중환자의학과 부교수');
+insert into career values('doc60',career_seq.nextval,'2012.07 ~현재	중앙정보병원 기획담당 교수');
+insert into career values('doc60',career_seq.nextval,'2011.12 ~현재	중앙정보병원 중증치료센터 부센터장');
+insert into career values('doc60',career_seq.nextval,'2013.03 ~ 2016.08	중앙정보병원 중환자의학과 의국장');
+insert into career values('doc60',career_seq.nextval,'2013.03 ~ 2015.02	성균관대학교 의과대학 중앙정보병원 중환자의학과 임상부교수');
+insert into career values('doc60',career_seq.nextval,'2010.03 ~ 2013.02	성균관대학교 의과대학 중앙정보병원 외과 임상조교수');
+
+insert into career values('doc61',career_seq.nextval,'2015.03 ~현재	성균관대학교 의과대학 중앙정보병원 중환자의학과 부교수');
+insert into career values('doc61',career_seq.nextval,'2012.07 ~현재	중앙정보병원 기획담당 교수');
+insert into career values('doc61',career_seq.nextval,'2011.12 ~현재	중앙정보병원 중증치료센터 부센터장');
+insert into career values('doc61',career_seq.nextval,'2013.03 ~ 2016.08	중앙정보병원 중환자의학과 의국장');
+insert into career values('doc61',career_seq.nextval,'2013.03 ~ 2015.02	성균관대학교 의과대학 중앙정보병원 중환자의학과 임상부교수');
+insert into career values('doc61',career_seq.nextval,'2010.03 ~ 2013.02	성균관대학교 의과대학 중앙정보병원 외과 임상조교수');
+
+insert into career values('doc62',career_seq.nextval,'2015.03 ~현재	성균관대학교 의과대학 중앙정보병원 중환자의학과 부교수');
+insert into career values('doc62',career_seq.nextval,'2012.07 ~현재	중앙정보병원 기획담당 교수');
+insert into career values('doc62',career_seq.nextval,'2011.12 ~현재	중앙정보병원 중증치료센터 부센터장');
+insert into career values('doc62',career_seq.nextval,'2013.03 ~ 2016.08	중앙정보병원 중환자의학과 의국장');
+insert into career values('doc62',career_seq.nextval,'2013.03 ~ 2015.02	성균관대학교 의과대학 중앙정보병원 중환자의학과 임상부교수');
+insert into career values('doc62',career_seq.nextval,'2010.03 ~ 2013.02	성균관대학교 의과대학 중앙정보병원 외과 임상조교수');
+
+insert into career values('doc63',career_seq.nextval,'2015.03 ~현재	성균관대학교 의과대학 중앙정보병원 중환자의학과 부교수');
+insert into career values('doc63',career_seq.nextval,'2012.07 ~현재	중앙정보병원 기획담당 교수');
+insert into career values('doc63',career_seq.nextval,'2011.12 ~현재	중앙정보병원 중증치료센터 부센터장');
+insert into career values('doc63',career_seq.nextval,'2013.03 ~ 2016.08	중앙정보병원 중환자의학과 의국장');
+insert into career values('doc63',career_seq.nextval,'2013.03 ~ 2015.02	성균관대학교 의과대학 중앙정보병원 중환자의학과 임상부교수');
+insert into career values('doc63',career_seq.nextval,'2010.03 ~ 2013.02	성균관대학교 의과대학 중앙정보병원 외과 임상조교수');
+
+insert into career values('doc64',career_seq.nextval,'2012.03 ~현재	성균관대학교 의과대학 중앙정보병원 장기이식센터장');
+insert into career values('doc64',career_seq.nextval,'2009.09 ~현재	성균관대학교 의과대학 중앙정보병원 이식외과 과장');
+insert into career values('doc64',career_seq.nextval,'2009.03 ~현재	성균관대학교 의과대학 중앙정보병원 암센터 육종센터장');
+insert into career values('doc64',career_seq.nextval,'2007.04 ~현재	성균관대학교 의과대학 외과학 교수');
+insert into career values('doc64',career_seq.nextval,'1996.03 ~현재	성균관대학교 의과대학 중앙정보병원 일반외과 전문의');
+
+insert into career values('doc65',career_seq.nextval,'2012.03 ~현재	성균관대학교 의과대학 중앙정보병원 장기이식센터장');
+insert into career values('doc65',career_seq.nextval,'2009.09 ~현재	성균관대학교 의과대학 중앙정보병원 이식외과 과장');
+insert into career values('doc65',career_seq.nextval,'2009.03 ~현재	성균관대학교 의과대학 중앙정보병원 암센터 육종센터장');
+insert into career values('doc65',career_seq.nextval,'2007.04 ~현재	성균관대학교 의과대학 외과학 교수');
+insert into career values('doc65',career_seq.nextval,'1996.03 ~현재	성균관대학교 의과대학 중앙정보병원 일반외과 전문의');
+
+insert into career values('doc66',career_seq.nextval,'2012.03 ~현재	성균관대학교 의과대학 중앙정보병원 장기이식센터장');
+insert into career values('doc66',career_seq.nextval,'2009.09 ~현재	성균관대학교 의과대학 중앙정보병원 이식외과 과장');
+insert into career values('doc66',career_seq.nextval,'2009.03 ~현재	성균관대학교 의과대학 중앙정보병원 암센터 육종센터장');
+insert into career values('doc66',career_seq.nextval,'2007.04 ~현재	성균관대학교 의과대학 외과학 교수');
+insert into career values('doc66',career_seq.nextval,'1996.03 ~현재	성균관대학교 의과대학 중앙정보병원 일반외과 전문의');
+
+insert into career values('doc67',career_seq.nextval,'2012.03 ~현재	성균관대학교 의과대학 중앙정보병원 장기이식센터장');
+insert into career values('doc67',career_seq.nextval,'2009.09 ~현재	성균관대학교 의과대학 중앙정보병원 이식외과 과장');
+insert into career values('doc67',career_seq.nextval,'2009.03 ~현재	성균관대학교 의과대학 중앙정보병원 암센터 육종센터장');
+insert into career values('doc67',career_seq.nextval,'2007.04 ~현재	성균관대학교 의과대학 외과학 교수');
+insert into career values('doc67',career_seq.nextval,'1996.03 ~현재	성균관대학교 의과대학 중앙정보병원 일반외과 전문의');
+
+insert into career values('doc68',career_seq.nextval,'2012.03 ~현재	성균관대학교 의과대학 중앙정보병원 장기이식센터장');
+insert into career values('doc68',career_seq.nextval,'2009.09 ~현재	성균관대학교 의과대학 중앙정보병원 이식외과 과장');
+insert into career values('doc68',career_seq.nextval,'2009.03 ~현재	성균관대학교 의과대학 중앙정보병원 암센터 육종센터장');
+insert into career values('doc68',career_seq.nextval,'2007.04 ~현재	성균관대학교 의과대학 외과학 교수');
+insert into career values('doc68',career_seq.nextval,'1996.03 ~현재	성균관대학교 의과대학 중앙정보병원 일반외과 전문의');
+
+insert into career values('doc69',career_seq.nextval,'2017.04 ~현재	중앙정보병원 혈관외과 분과장');
+insert into career values('doc69',career_seq.nextval,'1997.03 ~현재	성균관대학교 의과대학 외과학교실 교수');
+insert into career values('doc69',career_seq.nextval,'1994.03 ~현재	중앙정보병원 혈관외과 전문의');
+insert into career values('doc69',career_seq.nextval,'2011.11 ~ 2015.03	중앙정보병원 혈관외과 과장');
+insert into career values('doc69',career_seq.nextval,'1999.03 ~ 2005.02	중앙정보병원 혈관외과 과장');
+
+insert into career values('doc70',career_seq.nextval,'2017.04 ~현재	중앙정보병원 혈관외과 분과장');
+insert into career values('doc70',career_seq.nextval,'1997.03 ~현재	성균관대학교 의과대학 외과학교실 교수');
+insert into career values('doc70',career_seq.nextval,'1994.03 ~현재	중앙정보병원 혈관외과 전문의');
+insert into career values('doc70',career_seq.nextval,'2011.11 ~ 2015.03	중앙정보병원 혈관외과 과장');
+insert into career values('doc70',career_seq.nextval,'1999.03 ~ 2005.02	중앙정보병원 혈관외과 과장');
+
+insert into career values('doc71',career_seq.nextval,'2017.04 ~현재	중앙정보병원 혈관외과 분과장');
+insert into career values('doc71',career_seq.nextval,'1997.03 ~현재	성균관대학교 의과대학 외과학교실 교수');
+insert into career values('doc71',career_seq.nextval,'1994.03 ~현재	중앙정보병원 혈관외과 전문의');
+insert into career values('doc71',career_seq.nextval,'2011.11 ~ 2015.03	중앙정보병원 혈관외과 과장');
+insert into career values('doc71',career_seq.nextval,'1999.03 ~ 2005.02	중앙정보병원 혈관외과 과장');
+
+insert into career values('doc72',career_seq.nextval,'2017.04 ~현재	중앙정보병원 혈관외과 분과장');
+insert into career values('doc72',career_seq.nextval,'1997.03 ~현재	성균관대학교 의과대학 외과학교실 교수');
+insert into career values('doc72',career_seq.nextval,'1994.03 ~현재	중앙정보병원 혈관외과 전문의');
+insert into career values('doc72',career_seq.nextval,'2011.11 ~ 2015.03	중앙정보병원 혈관외과 과장');
+insert into career values('doc72',career_seq.nextval,'1999.03 ~ 2005.02	중앙정보병원 혈관외과 과장');
+
+insert into career values('doc73',career_seq.nextval,'2017.04 ~현재	중앙정보병원 혈관외과 분과장');
+insert into career values('doc73',career_seq.nextval,'1997.03 ~현재	성균관대학교 의과대학 외과학교실 교수');
+insert into career values('doc73',career_seq.nextval,'1994.03 ~현재	중앙정보병원 혈관외과 전문의');
+insert into career values('doc73',career_seq.nextval,'2011.11 ~ 2015.03	중앙정보병원 혈관외과 과장');
+insert into career values('doc73',career_seq.nextval,'1999.03 ~ 2005.02	중앙정보병원 혈관외과 과장');
+
+insert into career values('doc74',career_seq.nextval,'2002.04 ~현재	성균관대학교의과대학 이비인후과 교수');
+insert into career values('doc74',career_seq.nextval,'1994.05 ~현재	중앙정보병원 이비인후과 전문의');
+insert into career values('doc74',career_seq.nextval,'1997.03 ~ 2002.03	성균관대학교의과대학 이비인후과 부교수');
+insert into career values('doc74',career_seq.nextval,'1991.04 ~ 1994.04	인제대학교의과대학 백병원 이비인후과 조교수');
+
+insert into career values('doc75',career_seq.nextval,'2002.04 ~현재	성균관대학교의과대학 이비인후과 교수');
+insert into career values('doc75',career_seq.nextval,'1994.05 ~현재	중앙정보병원 이비인후과 전문의');
+insert into career values('doc75',career_seq.nextval,'1997.03 ~ 2002.03	성균관대학교의과대학 이비인후과 부교수');
+insert into career values('doc75',career_seq.nextval,'1991.04 ~ 1994.04	인제대학교의과대학 백병원 이비인후과 조교수');
+
+insert into career values('doc76',career_seq.nextval,'2002.04 ~현재	성균관대학교의과대학 이비인후과 교수');
+insert into career values('doc76',career_seq.nextval,'1994.05 ~현재	중앙정보병원 이비인후과 전문의');
+insert into career values('doc76',career_seq.nextval,'1997.03 ~ 2002.03	성균관대학교의과대학 이비인후과 부교수');
+insert into career values('doc76',career_seq.nextval,'1991.04 ~ 1994.04	인제대학교의과대학 백병원 이비인후과 조교수');
+
+insert into career values('doc77',career_seq.nextval,'2002.04 ~현재	성균관대학교의과대학 이비인후과 교수');
+insert into career values('doc77',career_seq.nextval,'1994.05 ~현재	중앙정보병원 이비인후과 전문의');
+insert into career values('doc77',career_seq.nextval,'1997.03 ~ 2002.03	성균관대학교의과대학 이비인후과 부교수');
+insert into career values('doc77',career_seq.nextval,'1991.04 ~ 1994.04	인제대학교의과대학 백병원 이비인후과 조교수');
+
+insert into career values('doc78',career_seq.nextval,'2002.04 ~현재	성균관대학교의과대학 이비인후과 교수');
+insert into career values('doc78',career_seq.nextval,'1994.05 ~현재	중앙정보병원 이비인후과 전문의');
+insert into career values('doc78',career_seq.nextval,'1997.03 ~ 2002.03	성균관대학교의과대학 이비인후과 부교수');
+insert into career values('doc78',career_seq.nextval,'1991.04 ~ 1994.04	인제대학교의과대학 백병원 이비인후과 조교수');
+
+insert into career values('doc79',career_seq.nextval,'2015.03 ~현재	성균관대학교 의료기기산업학과 겸임교수');
+insert into career values('doc79',career_seq.nextval,'2014.03 ~현재	중앙정보병원 심뇌혈관병원 예방재활센터 센터장');
+insert into career values('doc79',career_seq.nextval,'2012.03 ~현재	성균관대학교 융합의과학과 겸임교수');
+insert into career values('doc79',career_seq.nextval,'2005.03 ~현재	성균관대학교 대학원 인지과학 협동과정 겸임교수');
+
+insert into career values('doc80',career_seq.nextval,'2015.03 ~현재	성균관대학교 의료기기산업학과 겸임교수');
+insert into career values('doc80',career_seq.nextval,'2014.03 ~현재	중앙정보병원 심뇌혈관병원 예방재활센터 센터장');
+insert into career values('doc80',career_seq.nextval,'2012.03 ~현재	성균관대학교 융합의과학과 겸임교수');
+insert into career values('doc80',career_seq.nextval,'2005.03 ~현재	성균관대학교 대학원 인지과학 협동과정 겸임교수');
+
+insert into career values('doc81',career_seq.nextval,'2015.03 ~현재	성균관대학교 의료기기산업학과 겸임교수');
+insert into career values('doc81',career_seq.nextval,'2014.03 ~현재	중앙정보병원 심뇌혈관병원 예방재활센터 센터장');
+insert into career values('doc81',career_seq.nextval,'2012.03 ~현재	성균관대학교 융합의과학과 겸임교수');
+insert into career values('doc81',career_seq.nextval,'2005.03 ~현재	성균관대학교 대학원 인지과학 협동과정 겸임교수');
+
+insert into career values('doc82',career_seq.nextval,'2015.03 ~현재	성균관대학교 의료기기산업학과 겸임교수');
+insert into career values('doc82',career_seq.nextval,'2014.03 ~현재	중앙정보병원 심뇌혈관병원 예방재활센터 센터장');
+insert into career values('doc82',career_seq.nextval,'2012.03 ~현재	성균관대학교 융합의과학과 겸임교수');
+insert into career values('doc82',career_seq.nextval,'2005.03 ~현재	성균관대학교 대학원 인지과학 협동과정 겸임교수');
+
+insert into career values('doc83',career_seq.nextval,'2015.03 ~현재	성균관대학교 의료기기산업학과 겸임교수');
+insert into career values('doc83',career_seq.nextval,'2014.03 ~현재	중앙정보병원 심뇌혈관병원 예방재활센터 센터장');
+insert into career values('doc83',career_seq.nextval,'2012.03 ~현재	성균관대학교 융합의과학과 겸임교수');
+insert into career values('doc83',career_seq.nextval,'2005.03 ~현재	성균관대학교 대학원 인지과학 협동과정 겸임교수');
+
+insert into career values('doc84',career_seq.nextval,'2016.01 ~현재	중앙정보병원 진료부원장');
+insert into career values('doc84',career_seq.nextval,'1997.03 ~현재	성균관의대 정형외과 교수');
+insert into career values('doc84',career_seq.nextval,'1994.07 ~현재	중앙정보병원 정형외과 전문의');
+insert into career values('doc84',career_seq.nextval,'2013.08 ~ 2016.01	중앙정보병원 골관절센터장');
+insert into career values('doc84',career_seq.nextval,'2011.10 ~ 2013.07	중앙정보병원 입원부장');
+
+insert into career values('doc85',career_seq.nextval,'2016.01 ~현재	중앙정보병원 진료부원장');
+insert into career values('doc85',career_seq.nextval,'1997.03 ~현재	성균관의대 정형외과 교수');
+insert into career values('doc85',career_seq.nextval,'1994.07 ~현재	중앙정보병원 정형외과 전문의');
+insert into career values('doc85',career_seq.nextval,'2013.08 ~ 2016.01	중앙정보병원 골관절센터장');
+insert into career values('doc85',career_seq.nextval,'2011.10 ~ 2013.07	중앙정보병원 입원부장');
+
+insert into career values('doc86',career_seq.nextval,'2016.01 ~현재	중앙정보병원 진료부원장');
+insert into career values('doc86',career_seq.nextval,'1997.03 ~현재	성균관의대 정형외과 교수');
+insert into career values('doc86',career_seq.nextval,'1994.07 ~현재	중앙정보병원 정형외과 전문의');
+insert into career values('doc86',career_seq.nextval,'2013.08 ~ 2016.01	중앙정보병원 골관절센터장');
+insert into career values('doc86',career_seq.nextval,'2011.10 ~ 2013.07	중앙정보병원 입원부장');
+
+insert into career values('doc87',career_seq.nextval,'2016.01 ~현재	중앙정보병원 진료부원장');
+insert into career values('doc87',career_seq.nextval,'1997.03 ~현재	성균관의대 정형외과 교수');
+insert into career values('doc87',career_seq.nextval,'1994.07 ~현재	중앙정보병원 정형외과 전문의');
+insert into career values('doc87',career_seq.nextval,'2013.08 ~ 2016.01	중앙정보병원 골관절센터장');
+insert into career values('doc87',career_seq.nextval,'2011.10 ~ 2013.07	중앙정보병원 입원부장');
+
+insert into career values('doc88',career_seq.nextval,'2016.01 ~현재	중앙정보병원 진료부원장');
+insert into career values('doc88',career_seq.nextval,'1997.03 ~현재	성균관의대 정형외과 교수');
+insert into career values('doc88',career_seq.nextval,'1994.07 ~현재	중앙정보병원 정형외과 전문의');
+insert into career values('doc88',career_seq.nextval,'2013.08 ~ 2016.01	중앙정보병원 골관절센터장');
+insert into career values('doc88',career_seq.nextval,'2011.10 ~ 2013.07	중앙정보병원 입원부장');
+
+insert into career values('doc89',career_seq.nextval,'2016.01 ~현재	중앙정보병원 감염병대응센터장 (감염관리실장 겸직)');
+insert into career values('doc89',career_seq.nextval,'2015.04 ~현재	중앙정보병원 감염내과분과장');
+insert into career values('doc89',career_seq.nextval,'2016.01 ~2012.10 ~현재	중앙정보병원 감염내과 교수');
+insert into career values('doc89',career_seq.nextval,'2015.04 ~ 2016.01	중앙정보병원 기획실 전략기획팀장');
+insert into career values('doc89',career_seq.nextval,'2007.09 ~ 2015.03	중앙정보병원 감염관리실장');
+insert into career values('doc89',career_seq.nextval,'2007.03 ~ 2012.09	중앙정보병원 감염내과 부교수');
+insert into career values('doc90',career_seq.nextval,'2007.01 ~ 2007.02	중앙정보병원 감염내과 임상부교수');
+insert into career values('doc90',career_seq.nextval,'2002.03 ~ 2006.12	한림대학교성심병원 감염관리실장, 항생제위원회 위원장');
+insert into career values('doc90',career_seq.nextval,'2002.03 ~ 2006.12	한림대학교성심병원 감염내과 과장');
+insert into career values('doc90',career_seq.nextval,'2002.03 ~ 2006.12	한림대학교 의과대학 내과학교실 조교수,부교수');
+insert into career values('doc90',career_seq.nextval,'2004.02	미국 Columbia 의대 New York Presbyterian Hospital 연수');
+insert into career values('doc90',career_seq.nextval,'1999.07 ~ 2002.02	미국 Harvard Medical School, Research Fellow');
+insert into career values('doc90',career_seq.nextval,'1997.03 ~ 1999.02	서울아산병원 감염내과 전임의');
+insert into career values('doc90',career_seq.nextval,'1992.03 ~ 1996.02	서울아산병원 내과 전공의 수료');
+insert into career values('doc90',career_seq.nextval,'1991.03 ~ 1992.02	서울대학교 병원 수련의(인턴)수료');
+
+insert into career values('doc91',career_seq.nextval,'2014.09 ~현재	중앙정보병원 마취통증의학과 진료조교수');
+insert into career values('doc91',career_seq.nextval,'2012.11 ~ 2014.05	경기도 장애인구강진료센터 센터장 겸임');
+insert into career values('doc91',career_seq.nextval,'2012.04 ~ 2014.05	단국대학교 죽전치과병원 마취통증의학과 임상조교수');
+insert into career values('doc91',career_seq.nextval,'2008.03 ~ 2012.02	중앙정보병원 마취통증의학과 전임의');
+insert into career values('doc91',career_seq.nextval,'2004.03 ~ 2008.02	중앙정보병원 마취통증의학과 전공의 수료');
+insert into career values('doc91',career_seq.nextval,'2003.03 ~ 2004.02	중앙정보병원 인턴수료');
+
+insert into career values('doc92',career_seq.nextval,'2014.06 ~현재	식품의약품안전평가원 의약품 심사자문단');
+insert into career values('doc92',career_seq.nextval,'2014.05 ~현재	성균관대학교 제10대 교수평의회 의장');
+insert into career values('doc92',career_seq.nextval,'2014.03 ~현재	성균관대학교 교수평의회 의과대학 평의회장');
+insert into career values('doc92',career_seq.nextval,'2013.01 ~현재	Obstetrics gynecology Science 논문 심사위원');
+insert into career values('doc92',career_seq.nextval,'2012.09 ~현재	대한산부인과학회 대의원');
+insert into career values('doc92',career_seq.nextval,'2012.07 ~현재	대한모체태아의학회 이사');
+insert into career values('doc92',career_seq.nextval,'2012.04 ~현재	모자보건학회 이사');
+
+insert into career values('doc93',career_seq.nextval,'2000.04 ~현재	성균관대학교 의과대학 교수');
+insert into career values('doc93',career_seq.nextval,'1995.04 ~현재	중앙정보병원 신경과 전문의 뇌졸중 및 두통 진료담당');
+insert into career values('doc93',career_seq.nextval,'2015.03 ~ 2015.12	Stroke and Related Disorders News (Elsevier 출판사) 편집위원장');
+insert into career values('doc93',career_seq.nextval,'2014.03 ~ 2015.03	중앙정보병원 심장뇌혈관병원 운영지원실장');
+insert into career values('doc93',career_seq.nextval,'2009.09 ~ 2013.07	중앙정보병원 뇌신경센터장');
+
+insert into career values('doc94',career_seq.nextval,'2002.04 ~현재	성균관의대 중앙정보병원 소아청소년과 교수');
+insert into career values('doc94',career_seq.nextval,'1994.04 ~현재	중앙정보병원 소아청소년과 전문의');
+insert into career values('doc94',career_seq.nextval,'1997.03 ~ 2002.04	성균관의대 중앙정보병원 소아과 부교수');
+insert into career values('doc94',career_seq.nextval,'1992.03 ~ 1994.03	미국 남가주대학교 신생아학 연구전임의');
+insert into career values('doc94',career_seq.nextval,'1990.03 ~ 1992.02	강남 차병원 소아과장');
+
+insert into career values('doc95',career_seq.nextval,'2016.01 ~현재	중앙정보병원 암병원 간암센터장');
+insert into career values('doc95',career_seq.nextval,'2002.04 ~현재	성균관대학교 중앙정보병원 교수');
+insert into career values('doc95',career_seq.nextval,'2005.09 ~ 2015.02	중앙정보병원 간암센터장');
+insert into career values('doc95',career_seq.nextval,'2004.12 ~ 2009.12	중앙정보병원 외래부장');
+insert into career values('doc95',career_seq.nextval,'2005.09 ~ 2007.08	중앙정보병원 소화기연구소장');
+insert into career values('doc95',career_seq.nextval,'1999.03 ~ 2005.08	중앙정보병원 소화기내과장');
+insert into career values('doc95',career_seq.nextval,'1997.03 ~ 2002.03	성균관대학교 중앙정보병원 부교수');
+
+insert into career values('doc96',career_seq.nextval,'2018.03 ~현재	중앙정보병원 임상조교수');
+insert into career values('doc96',career_seq.nextval,'2017.03 ~ 2018.02	중앙정보병원 임상전임강사');
+insert into career values('doc96',career_seq.nextval,'2015.03 ~ 2017.02	순천향대학교 서울병원 조교수');
+insert into career values('doc96',career_seq.nextval,'2014.03 ~ 2015.02	순천향대학교 서울병원 임상조교수');
+insert into career values('doc96',career_seq.nextval,'2013.03 ~ 2014.02	순천향대학교 서울병원 임상강사');
+
+insert into career values('doc97',career_seq.nextval,'2007.10 ~현재	성균관대학교 의과대학 내과학교실 교수');
+insert into career values('doc97',career_seq.nextval,'1994.10 ~현재	중앙정보병원 감염내과 전문의');
+insert into career values('doc97',career_seq.nextval,'2005.09 ~ 2015.03	중앙정보병원 감염내과 과장');
+insert into career values('doc97',career_seq.nextval,'2001.10 ~ 2007.09	성균관대학교 의과대학 내과학교실 부교수');
+insert into career values('doc97',career_seq.nextval,'2003.03 ~ 2005.08	중앙정보병원 감염관리 실장');
+insert into career values('doc97',career_seq.nextval,'1997.03 ~ 2001.09	성균관대학교 의과대학 내과학교실 조교수');
+
+insert into career values('doc98',career_seq.nextval,'2013.04 ~현재	성균관 의대 중앙정보병원 감염내과 부교수');
+insert into career values('doc98',career_seq.nextval,'2009.03 ~ 2013.03	성균관 의대 중앙정보병원 감염내과 조교수');
+insert into career values('doc98',career_seq.nextval,'2007.09 ~ 2009.02	미국 미네소타주 Mayo clinic 연수');
+insert into career values('doc98',career_seq.nextval,'2007.05 ~ 2009.02	중앙정보병원 감염내과 임상 조교수');
+insert into career values('doc98',career_seq.nextval,'2005.05 ~ 2007.04	국군 수도병원 감염내과 과장 (군의관)');
+
+insert into career values('doc99',career_seq.nextval,'2013.04 ~현재	성균관 의대 중앙정보병원 감염내과 부교수');
+insert into career values('doc99',career_seq.nextval,'2009.03 ~ 2013.03	성균관 의대 중앙정보병원 감염내과 조교수');
+insert into career values('doc99',career_seq.nextval,'2007.09 ~ 2009.02	미국 미네소타주 Mayo clinic 연수');
+insert into career values('doc99',career_seq.nextval,'2007.05 ~ 2009.02	중앙정보병원 감염내과 임상 조교수');
+insert into career values('doc99',career_seq.nextval,'2005.05 ~ 2007.04	국군 수도병원 감염내과 과장 (군의관)');
+
+insert into career values('doc100',career_seq.nextval,'2009.09 ~현재	중앙정보병원 당뇨병센터 센터장');
+insert into career values('doc100',career_seq.nextval,'2002.04 ~현재	성균관의과대학 내과 교수');
+insert into career values('doc100',career_seq.nextval,'1994.08 ~현재	중앙정보병원 내분비-대사내과 전문의');
+
+insert into career values('doc101',career_seq.nextval,'2009.09 ~현재	중앙정보병원 당뇨병센터 센터장');
+insert into career values('doc101',career_seq.nextval,'2002.04 ~현재	성균관의과대학 내과 교수');
+insert into career values('doc101',career_seq.nextval,'1994.08 ~현재	중앙정보병원 내분비-대사내과 전문의');
+
+insert into career values('doc102',career_seq.nextval,'2009.09 ~현재	중앙정보병원 당뇨병센터 센터장');
+insert into career values('doc102',career_seq.nextval,'2002.04 ~현재	성균관의과대학 내과 교수');
+insert into career values('doc102',career_seq.nextval,'1994.08 ~현재	중앙정보병원 내분비-대사내과 전문의');
+insert into career values('doc102',career_seq.nextval,'2004.12 ~ 2009.04	중앙정보병원 건강의학센터장');
+insert into career values('doc102',career_seq.nextval,'1999.03 ~ 2005.08	중앙정보병원 내분비-대사내과 과장');
+insert into career values('doc102',career_seq.nextval,'1997.03 ~ 2002.03	성균관의과대학 내과 부교수');
+
+insert into career values('doc103',career_seq.nextval,'2002.04 ~현재	성균관대학교 의과대학 내과 교수');
+insert into career values('doc103',career_seq.nextval,'1994.04 ~현재	중앙정보병원 내분비내과 근무');
+insert into career values('doc103',career_seq.nextval,'2013.09 ~ 2017.03	성균관대학교 의과대학 내과학교실 주임교수');
+insert into career values('doc103',career_seq.nextval,'2013.08 ~ 2017.03	중앙정보병원 내과 과장');
+insert into career values('doc103',career_seq.nextval,'2009.09 ~ 2013.07	중앙정보병원 외래부장');
+
+insert into career values('doc104',career_seq.nextval,'2017.04 ~현재	성균관대학교 의과대학 내과학교실 주임교수');
+insert into career values('doc104',career_seq.nextval,'2017.04 ~현재	중앙정보병원 내과 과장');
+insert into career values('doc104',career_seq.nextval,'2007.10 ~현재	성균관대학교 의과대학 내과 교수');
+insert into career values('doc104',career_seq.nextval,'1994.05 ~현재	중앙정보병원 내분비-대사 내과 전문의');
+
+insert into career values('doc105',career_seq.nextval,'2002.04 ~현재	성균관대학교 의과대학 내과 교수');
+insert into career values('doc105',career_seq.nextval,'1994.04 ~현재	중앙정보병원 내분비내과 근무');
+insert into career values('doc105',career_seq.nextval,'2013.09 ~ 2017.03	성균관대학교 의과대학 내과학교실 주임교수');
+insert into career values('doc105',career_seq.nextval,'2013.08 ~ 2017.03	중앙정보병원 내과 과장');
+insert into career values('doc105',career_seq.nextval,'2009.09 ~ 2013.07	중앙정보병원 외래부장');
+insert into career values('doc105',career_seq.nextval,'2009.09 ~ 2011.11	중앙정보병원 내분비-대사 내과 과장');
+
+insert into career values('doc106',career_seq.nextval,'2017.04 ~현재	중앙정보병원 내분비-대사 내과 과장');
+insert into career values('doc106',career_seq.nextval,'2014.04 ~현재	성균관대학교 의과대학 내과 교수');
+insert into career values('doc106',career_seq.nextval,'2008.02 ~현재	중앙정보병원 내분비대사내과 전문의');
+insert into career values('doc106',career_seq.nextval,'2016.03 ~ 2017.03	중앙정보병원 SMC파트너즈센터 부센터장');
+insert into career values('doc106',career_seq.nextval,'2008.03 ~ 2014.03	성균관대학교 의과대학 내과 부교수');
+
+insert into career values('doc107',career_seq.nextval,'2015.10 ~현재	중앙정보병원 병원장');
+insert into career values('doc107',career_seq.nextval,'2002.10 ~현재	성균관대학교 의과대학 내과학교실 교수');
+insert into career values('doc107',career_seq.nextval,'1994.01 ~현재	중앙정보병원 호흡기내과 전문의');
+insert into career values('doc107',career_seq.nextval,'2011.12 ~ 2012.02	중앙정보병원 기획실장');
+insert into career values('doc107',career_seq.nextval,'2011.01 ~ 2011.11	성균관대학교 의과대학 학장');
+insert into career values('doc107',career_seq.nextval,'2008.08 ~ 2011.01	중앙정보병원 기획실장');
+
+insert into career values('doc108',career_seq.nextval,'2007.10 ~현재	성균관대학교 의과대학 내과 교수');
+insert into career values('doc108',career_seq.nextval,'2009.08 ~ 2015.03	중앙정보병원 호흡기내과 과장');
+insert into career values('doc108',career_seq.nextval,'2001.03 ~ 2007.09	성균관대학교 의과대학 내과 부교수');
+insert into career values('doc108',career_seq.nextval,'2000.05 ~ 2002.04	미국 University of Iowa 연수');
+insert into career values('doc108',career_seq.nextval,'1997.03 ~ 2001.02	성균관대학교 의과대학 내과 조교수');
+
+insert into career values('doc109',career_seq.nextval,'2017.04 ~현재	중앙정보병원 호흡기내과분과장');
+insert into career values('doc109',career_seq.nextval,'2013.08 ~현재	중앙정보병원 중증치료센터장');
+insert into career values('doc109',career_seq.nextval,'2013.01 ~현재	중앙정보병원 중환자의학과 과장');
+insert into career values('doc109',career_seq.nextval,'2009.10 ~현재	성균관대학교 의과대학 내과학교실 교수');
+insert into career values('doc109',career_seq.nextval,'2005.09 ~현재	중환자실 실장');
+insert into career values('doc109',career_seq.nextval,'2003.10 ~ 2009.09	성균관대학교 의과대학 내과학교실 부교수');
+
+insert into career values('doc110',career_seq.nextval,'2014.04 ~현재	성균관대학교 의과대학 내과학교실 교수');
+insert into career values('doc110',career_seq.nextval,'2015.04 ~ 2016.06	중앙정보병원 호흡기내과 과장');
+insert into career values('doc110',career_seq.nextval,'2008.04 ~ 2014.03	성균관대학교 의과대학 내과학교실 부교수');
+insert into career values('doc110',career_seq.nextval,'2009.08 ~ 2010.07	미국 콜로라도 덴버, National Jewish Medical and Research Center 연수');
+insert into career values('doc110',career_seq.nextval,'2004.03 ~ 2008.03	성균관대학교 의과대학 내과학교실 조교수');
+insert into career values('doc110',career_seq.nextval,'2003.09 ~ 2004.02	성균관대학교 의과대학 내과학교실 임상조교수');
+
+insert into career values('doc111',career_seq.nextval,'2013.04 ~현재	중앙정보병원 호흡기내과 부교수');
+insert into career values('doc111',career_seq.nextval,'2009.03 ~ 2013.03	중앙정보병원 호흡기내과 조교수');
+insert into career values('doc111',career_seq.nextval,'2008.03 ~ 2009.02	중앙정보병원 호흡기내과 임상조교수');
+insert into career values('doc111',career_seq.nextval,'2007.05 ~ 2008.02	중앙정보병원 호흡기내과 임상강사');
+insert into career values('doc111',career_seq.nextval,'2006.05 ~ 2007.04	서울대학교병원 호흡기내과 임상강사');
+
+insert into career values('doc112',career_seq.nextval,'2009.09 ~ 2015.03	중앙정보병원 커뮤니케이션실장');
+insert into career values('doc112',career_seq.nextval,'2011.11 ~ 2013.07	중앙정보병원 성형외과 과장');
+insert into career values('doc112',career_seq.nextval,'2007.02 ~ 2009.08	중앙정보병원 교육수련부 부장');
+insert into career values('doc112',career_seq.nextval,'2002.03 ~ 2007.08	성균관의대 성형외과 주임교수');
+insert into career values('doc112',career_seq.nextval,'2001.05 ~ 2007.08	중앙정보병원 성형외과 과장');
+insert into career values('doc112',career_seq.nextval,'1998.04 ~ 2001.05	인제대학교 의과대학 성형외과 부교수');
+insert into career values('doc112',career_seq.nextval,'1996.09 ~ 2001.05	인제대 의과대학 서울백병원 성형외과 과장');
+
+insert into career values('doc113',career_seq.nextval,'2013.09 ~현재	성균관대학교 의과대학 성형외과학교실 주임교수');
+insert into career values('doc113',career_seq.nextval,'2013.08 ~현재	성균관대학교 의과대학 중앙정보병원 성형외과 과장');
+insert into career values('doc113',career_seq.nextval,'2009.03 ~현재	성균관대학교 의과대학교 성형외과 교수');
+insert into career values('doc113',career_seq.nextval,'2012.03 ~ 2015.03	중앙정보병원 대외협력실장');
+insert into career values('doc113',career_seq.nextval,'2007.09 ~ 2011.11	중앙정보병원 성형외과 과장');
+
+insert into career values('doc114',career_seq.nextval,'2017.10 ~현재	성균관대학교 의과대학 교수');
+insert into career values('doc114',career_seq.nextval,'2004.03 ~현재	성균관대학교 의과대학 조교수');
+insert into career values('doc114',career_seq.nextval,'2002.03 ~현재	중앙정보병원 성형외과 전문의');
+insert into career values('doc114',career_seq.nextval,'2011.10 ~ 2017.09	성균관대학교 의과대학 부교수');
+insert into career values('doc114',career_seq.nextval,'2007.1201 ~ 2009.05	M.D.Anderson Cancer Center 성형외과 교환교수');
+
+insert into career values('doc115',career_seq.nextval,'2017.04 ~현재	성균관대학교 의과대학 중앙정보병원 성형외과 교수');
+insert into career values('doc115',career_seq.nextval,'2011.03 ~ 2017.03	성균관대학교 의과대학 중앙정보병원 성형외과 부교수');
+insert into career values('doc115',career_seq.nextval,'2009.03 ~ 2011.02	성균관대학교 의과대학 중앙정보병원 성형외과 조교수');
+insert into career values('doc115',career_seq.nextval,'2007.05 ~ 2009.02	중앙정보병원 성형외과 임상조교수');
+
+insert into career values('doc116',career_seq.nextval,'2014.04 ~현재	성균관대학교 의과대학 중앙정보병원 성형외과 부교수');
+insert into career values('doc116',career_seq.nextval,'2014.07 ~ 2015.07	미국보스턴 하버드의과대학 부설 Boston Children Hospital 연수');
+insert into career values('doc116',career_seq.nextval,'2008.03 ~ 2014.03	성균관대학교 의과대학 중앙정보병원 성형외과 조교수');
+insert into career values('doc116',career_seq.nextval,'2010.01 ~ 2010.01	대만장궁병원 두개안면센터 단기연수');
+insert into career values('doc116',career_seq.nextval,'2003.03 ~ 2008.02	중앙정보병원 성형외과 임상강사');
+
+insert into career values('doc117',career_seq.nextval,'2002.04 ~현재	성균관의대 중앙정보병원 소아청소년과 교수');
+insert into career values('doc117',career_seq.nextval,'1994.04 ~현재	중앙정보병원 소아청소년과 전문의');
+insert into career values('doc117',career_seq.nextval,'2007.09 ~ 2009.08	성균관의대 중앙정보병원 소아청소년과 과장, 주임교수');
+insert into career values('doc117',career_seq.nextval,'1997.03 ~ 2002.04	성균관의대 중앙정보병원 소아과 부교수');
+insert into career values('doc117',career_seq.nextval,'1992.03 ~ 1994.03	미국 남가주대학교 신생아학 연구전임의');
+
+insert into career values('doc118',career_seq.nextval,'2017.04 ~현재	중앙정보병원 커뮤니케이션실장');
+insert into career values('doc118',career_seq.nextval,'2003.04 ~현재	성균관대학교 의과대학 중앙정보병원 소아청소년과 교수');
+insert into career values('doc118',career_seq.nextval,'1994.03 ~현재	중앙정보병원 소아과 전문의');
+insert into career values('doc118',career_seq.nextval,'2013.08 ~ 2017.03	성균관대학교 의과대학 소아과학교실 주임교수 및 중앙정보병원 소아청소년과장');
+insert into career values('doc118',career_seq.nextval,'2011.11 ~ 2017.03	중앙정보병원 인재기획실장');
+insert into career values('doc118',career_seq.nextval,'2009.08 ~ 2011.11	성균관대학교 의과대학 소아과학교실 주임교수 및 중앙정보병원 소아청소년과장');
+
+insert into career values('doc119',career_seq.nextval,'2001.04 ~현재	성균관의과대학교 교수');
+insert into career values('doc119',career_seq.nextval,'2001.01 ~현재	임상의학연구소 종합연구부장');
+insert into career values('doc119',career_seq.nextval,'2013.08 ~ 2017.03	중앙정보병원 소아청소년센터장');
+insert into career values('doc119',career_seq.nextval,'2011.09 ~ 2013.08	성균관대학교 의과대학 소아과학교실 주임교수');
+insert into career values('doc119',career_seq.nextval,'2011.11 ~ 2013.07	중앙정보병원 소아청소년과장');
+insert into career values('doc119',career_seq.nextval,'2003.03 ~ 2005.02	임상의학연구소 종합실험부 센터장');
+
+insert into career values('doc120',career_seq.nextval,'2004.09 ~현재	중앙정보병원 소아청소년과 진료교수');
+insert into career values('doc120',career_seq.nextval,'2007.09 ~ 2011.11	중앙정보병원 심장소아청소년과 과장');
+insert into career values('doc120',career_seq.nextval,'1997.09 ~ 2004.08	성균관대학교 의과대학 중앙정보병원 소아청소년과 조교수');
+insert into career values('doc120',career_seq.nextval,'2001.09 ~ 2002.08	캐나다 The Hospital for Sick Children 연수');
+insert into career values('doc120',career_seq.nextval,'1994.04 ~ 1997.08	중앙정보병원 소아청소년과 전문의');
+
+insert into career values('doc121',career_seq.nextval,'2002.03 ~현재	성균관대학교 의과대학 외과학교실 교수');
+insert into career values('doc121',career_seq.nextval,'1999.03 ~현재	IRB위원장');
+insert into career values('doc121',career_seq.nextval,'1994.06 ~현재	중앙정보병원 외과 전문의');
+insert into career values('doc121',career_seq.nextval,'2012.03 ~ 2015.03	중앙정보병원 외과 과장');
+insert into career values('doc121',career_seq.nextval,'2012.03 ~ 2015.03	성균관대학교 외과대학 외과학 주임교수');
+insert into career values('doc121',career_seq.nextval,'2009.09 ~ 2013.07	성균관대학교 의과대학 중앙정보병원 소아청소년진료센터장');
+insert into career values('doc121',career_seq.nextval,'2001.03 ~ 2009.08	성균관대학교 의과대학 중앙정보병원 장기이식센터장');
+
+insert into career values('doc122',career_seq.nextval,'2002.03 ~현재	중앙정보병원 의과대학 신경과 교수');
+insert into career values('doc122',career_seq.nextval,'1994.09 ~현재	중앙정보병원 뇌전증-수면센터 Director');
+insert into career values('doc122',career_seq.nextval,'1997.03 ~ 2002.02	성균관대학교 의과대학 신경과 부교수');
+insert into career values('doc122',career_seq.nextval,'1994.09	미국 임상신경생리학 전문의 자격 취득');
+
+insert into career values('doc123',career_seq.nextval,'2013.09 ~현재	성균관대학교 의과대학 신경과학 주임교수');
+insert into career values('doc123',career_seq.nextval,'2013.08 ~현재	중앙정보병원 신경과 과장');
+insert into career values('doc123',career_seq.nextval,'2005.04 ~현재	성균관대학교 의과대학 교수(신경과)');
+insert into career values('doc123',career_seq.nextval,'1994.05 ~현재	중앙정보병원 신경과 전문의');
+insert into career values('doc123',career_seq.nextval,'1997.03 ~ 2005.03	성균관대학교 의과대학 조교수 (신경과)');
+
+insert into career values('doc124',career_seq.nextval,'2013.09 ~현재	성균관대학교 의과대학 신경과학 주임교수');
+insert into career values('doc124',career_seq.nextval,'2013.08 ~현재	중앙정보병원 신경과 과장');
+insert into career values('doc124',career_seq.nextval,'2005.04 ~현재	성균관대학교 의과대학 교수(신경과)');
+insert into career values('doc124',career_seq.nextval,'1994.05 ~현재	중앙정보병원 신경과 전문의');
+insert into career values('doc124',career_seq.nextval,'1997.03 ~ 2005.03	성균관대학교 의과대학 조교수 (신경과)');
+insert into career values('doc124',career_seq.nextval,'2000.09 ~ 2002.08	미국 University of Alabama at Birmingham(UAB) 연수');
+
+insert into career values('doc125',career_seq.nextval,'2005.05 ~현재	성균관대학교 의과대학 외과학 교실 교수 및 중앙정보병원 외과 교수');
+insert into career values('doc125',career_seq.nextval,'2015.04 ~ 2018.03	성균관대학교 의과대학 외과학 교실 주임교수');
+insert into career values('doc125',career_seq.nextval,'2015.04 ~ 2018.03	성균관대학교 의과대학 중앙정보병원 외과과장');
+insert into career values('doc125',career_seq.nextval,'2013.07 ~ 2015.03	성균관대학교 의과대학 중앙정보병원 소화기외과분과장');
+insert into career values('doc125',career_seq.nextval,'2013.04 ~ 2015.03	성균관대학교 의과대학 중앙정보병원 췌담도암센터장');
+
+insert into career values('doc126',career_seq.nextval,'2017.04 ~현재	중앙정보병원 암병원 췌담도암센터장');
+insert into career values('doc126',career_seq.nextval,'2017.04 ~현재	중앙정보병원 간담췌외과 분과장');
+insert into career values('doc126',career_seq.nextval,'2007.10 ~현재	성균관의대 교수');
+insert into career values('doc126',career_seq.nextval,'1995.09 ~현재	중앙정보병원 외과 전문의');
+insert into career values('doc126',career_seq.nextval,'2001.03 ~ 2007.09	성균관의대 부교수');
+
+insert into career values('doc127',career_seq.nextval,'2016.12 ~현재	재단법인 인성의과학연구재단 이사');
+insert into career values('doc127',career_seq.nextval,'2016.05 ~현재	성균관대학교 의무부총장');
+insert into career values('doc127',career_seq.nextval,'1997.03 ~현재	성균관의대 신경외과학교실 교수');
+insert into career values('doc127',career_seq.nextval,'1994.03 ~현재	중앙정보병원 신경외과 전문의');
+insert into career values('doc127',career_seq.nextval,'2013.02 ~ 2016.01	중앙정보병원 건강보험자문 실차장');
+insert into career values('doc127',career_seq.nextval,'2007.02 ~ 2011.02	성균관대학교 의과대학 학장/ 의학전문대학원 원장');
+
+insert into career values('doc128',career_seq.nextval,'2001.04 ~현재	성균관의대 신경외과학교실 교수');
+insert into career values('doc128',career_seq.nextval,'1996.03 ~현재	중앙정보병원 신경외과 전문의');
+insert into career values('doc128',career_seq.nextval,'2007.02 ~ 2011.11	성균관의대 신경외과학교실 주임교수');
+insert into career values('doc128',career_seq.nextval,'2007.02 ~ 2011.11	중앙정보병원 신경외과 과장');
+insert into career values('doc128',career_seq.nextval,'2006.05 ~ 2006.07	독일 말부르크 의과대학 방문교수');
+insert into career values('doc128',career_seq.nextval,'2001.04 ~ 2001.07	독일 하노버 의과대학 방문교수');
+
+insert into career values('doc129',career_seq.nextval,'2012.09 ~현재	대한신경외과학회 전산정보 상임이사');
+insert into career values('doc129',career_seq.nextval,'2011.11 ~현재	중앙정보병원 신경외과 과장');
+insert into career values('doc129',career_seq.nextval,'2011.11 ~현재	성균관의대 신경외과학교실 주임교수');
+insert into career values('doc129',career_seq.nextval,'2010.03 ~현재	대한신경중환자의학회 상임이사, 부회장');
+insert into career values('doc129',career_seq.nextval,'2002.04 ~현재	성균관의대 신경외과학교실 교수');
+
+insert into career values('doc130',career_seq.nextval,'2002.10 ~현재	성균관의대 신경외과학교실 교수');
+insert into career values('doc130',career_seq.nextval,'1994.08 ~현재	중앙정보병원 신경외과 전문의 (뇌혈관질환/뇌전증수술)');
+insert into career values('doc130',career_seq.nextval,'2007.10 ~ 2007.12	일본 Kyushu University 방문 교수');
+insert into career values('doc130',career_seq.nextval,'1997.03 ~ 2002.09	성균관의대 신경외과학교실 부교수');
+
+insert into career values('doc131',career_seq.nextval,'2008.03 ~현재	중앙정보병원 신경외과 교수');
+insert into career values('doc131',career_seq.nextval,'2003.03 ~ 2008.02	중앙정보병원 신경외과 임상교수');
+insert into career values('doc131',career_seq.nextval,'1998.04 ~ 2003.02	경상대학교 의과대학 부교수');
+insert into career values('doc131',career_seq.nextval,'2002.04 ~ 2002.05	일본 큐슈 척추 손상 센터 (교환교수)');
+insert into career values('doc131',career_seq.nextval,'1997.10 ~ 1999.09	미국 St. Louis 대학교 (교환교수)');
+insert into career values('doc131',career_seq.nextval,'1994.04 ~ 1998.03	경상대학교 의과대학 조교수');
+
+insert into career values('doc132',career_seq.nextval,'2002.04 ~현재	성균관대학교 의과대학 안과 교수');
+insert into career values('doc132',career_seq.nextval,'1994.03 ~현재	중앙정보병원 안과 전문의');
+insert into career values('doc132',career_seq.nextval,'2003.03 ~ 2009.08	성균관 의대 안과 주임교수,중앙정보병원 안과 과장');
+insert into career values('doc132',career_seq.nextval,'1997.03 ~ 2002.04	성균관대학교 의과대학 안과 부교수');
+insert into career values('doc132',career_seq.nextval,'2001.04 ~ 2001.05	미국 Massachusetts Eye ear Infirmary 연수');
+
+insert into career values('doc133',career_seq.nextval,'2002.04 ~현재	성균관대학교 의과대학 안과 교수');
+insert into career values('doc133',career_seq.nextval,'2009.09 ~ 2011.11	성균관대학교 의과대학 안과 주임교수');
+insert into career values('doc133',career_seq.nextval,'1997.03 ~ 2002.04	성균관대학교 의과대학 안과 부교수');
+insert into career values('doc133',career_seq.nextval,'1994.06 ~ 1997.02	중앙정보병원 안과 전문의');
+
+insert into career values('doc134',career_seq.nextval,'2007.04 ~현재	성균관대학교 의과대학 안과 교수');
+insert into career values('doc134',career_seq.nextval,'2011.11 ~ 2015.03	중앙정보병원 안과 과장, 주임교수');
+insert into career values('doc134',career_seq.nextval,'2001.04 ~ 2007.03	성균관대학교 의과대학 안과 부교수');
+insert into career values('doc134',career_seq.nextval,'2000.10 ~ 2001.03	중앙정보병원 안과 전문의');
+insert into career values('doc134',career_seq.nextval,'1999.08 ~ 2000.09	충북대학교병원 안과 과장');
+insert into career values('doc134',career_seq.nextval,'1993.05 ~ 2000.09	충북대학교 의과대학 안과 (전임강사 ~ 부교수)');
+
+insert into career values('doc135',career_seq.nextval,'2015.03 ~현재	중앙정보병원 안과 과장, 주임교수');
+insert into career values('doc135',career_seq.nextval,'2015.01 ~현재	보건복지부 건강보험분쟁조정위원회 위원');
+insert into career values('doc135',career_seq.nextval,'2013.08 ~현재	중앙정보병원 진료운영실장');
+insert into career values('doc135',career_seq.nextval,'2009.09 ~현재	보건복지부 장애판정위원회 위원');
+insert into career values('doc135',career_seq.nextval,'2008.04 ~현재	성균관대학교 의과대학 안과 교수');
+insert into career values('doc135',career_seq.nextval,'2008.01 ~현재	식품의약품안전청 중양약사심의위원회 전문가');
+
+insert into career values('doc136',career_seq.nextval,'2009.10 ~현재	성균관대학교 의과대학 안과 교수');
+insert into career values('doc136',career_seq.nextval,'1997.03 ~현재	중앙정보병원 안과 전문의');
+insert into career values('doc136',career_seq.nextval,'2003.10 ~ 2009.09	성균관대학교 의과대학 안과 부교수');
+insert into career values('doc136',career_seq.nextval,'1999.10 ~ 2003.09	성균관대학교 의과대학 안과 조교수');
+insert into career values('doc136',career_seq.nextval,'2001.03 ~ 2003.02	미국 NIH National Eye Institute, Postdoctoral Fellow');
+
+insert into career values('doc137',career_seq.nextval,'2002.03 ~현재	성균관의대 영상의학과 교수');
+insert into career values('doc137',career_seq.nextval,'2001.03 ~ 2004.09	삼성 임상의학연구센터 영상의학연구센터장');
+insert into career values('doc137',career_seq.nextval,'1994.06 ~ 2003.03	중앙정보병원 영상의학과 신경방사선 디렉터');
+insert into career values('doc137',career_seq.nextval,'2001.03 ~ 2003.02	성균관의대 중앙정보병원 영상의학과 과장');
+insert into career values('doc137',career_seq.nextval,'1997.03 ~ 2002.02	성균관의대 부교수');
+
+insert into career values('doc138',career_seq.nextval,'2015.0101 ~현재	성균관대학교 삼성융합의과학원장');
+insert into career values('doc138',career_seq.nextval,'2002.08 ~현재	성균관의대 중앙정보병원 영상의학과 교수');
+insert into career values('doc138',career_seq.nextval,'1994.07 ~현재	성균관의대 중앙정보병원 영상의학과 전문의');
+insert into career values('doc138',career_seq.nextval,'2010.01 ~ 2011.11	중앙정보병원 기획조정처장');
+insert into career values('doc138',career_seq.nextval,'2008.08 ~ 2009.12	중앙정보병원 진료부원장');
+
+insert into career values('doc139',career_seq.nextval,'2014.0101 ~현재	성균관대학교 의과대학장(겸)의학전문대학원장');
+insert into career values('doc139',career_seq.nextval,'2002.04 ~현재	성균관의대 중앙정보병원 영상의학과 교수');
+insert into career values('doc139',career_seq.nextval,'1994.03 ~현재	성균관의대 중앙정보병원 영상의학과 전문의');
+insert into career values('doc139',career_seq.nextval,'2008.08 ~ 2011.10	성균관의대 중앙정보병원 영상의학과 과장');
+
+insert into career values('doc140',career_seq.nextval,'2004.03 ~현재	성균관대학교 의과대학 영상의학과 교수');
+insert into career values('doc140',career_seq.nextval,'2000.10 ~ 2004.02	인하대학교 의과대학 방사선과학교실 교수');
+insert into career values('doc140',career_seq.nextval,'1997.03 ~ 2000.09	인하대학교 의과대학 방사선과학교실 부교수');
+insert into career values('doc140',career_seq.nextval,'1995.10 ~ 1997.02	경상대학교 의과대학 진단방사선과학교실 부교수');
+insert into career values('doc140',career_seq.nextval,'1991.04 ~ 1995.09	경상대학교 의과대학 진단방사선과학교실 조교수');
+
+
+-- 학회
+CREATE TABLE institute  (
+	docNo        VARCHAR2(6)  NOT NULL, -- 의사번호
+	insNum       NUMBER       NOT NULL, -- 학회시퀀스
+	docInstitute VARCHAR2(150) NOT NULL  -- 학회활동
+);
+
+-- 학회
+ALTER TABLE institute 
+ADD CONSTRAINT PK_institute  -- 학회 기본키
+PRIMARY KEY (docNo,insNum); -- 의사번호 -- 학회시퀀스
+
+COMMENT ON TABLE institute  IS '학회'; -- 학회
+COMMENT ON COLUMN institute .docNo IS '의사번호'; -- 의사번호
+COMMENT ON COLUMN institute .insNum IS '학회시퀀스'; -- 학회시퀀스
+COMMENT ON COLUMN institute .docInstitute IS '학회활동'; -- 학회활동
+
+insert into institute values('doc1',insNum_seq.nextval,'2005.02	서울대학교 의과대학원 의학과 (의학박사)');
+insert into institute values('doc1',insNum_seq.nextval,'1996.02	울산대학교 의과대학원 의학과 (의학석사)');
+insert into institute values('doc1',insNum_seq.nextval,'1991.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc2',insNum_seq.nextval,'2008.02	서울대학교 대학원 석사, 박사 취득');
+insert into institute values('doc2',insNum_seq.nextval,'2002.02	이화여자대학교 졸업');
+
+insert into institute values('doc3',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc3',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc3',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc4',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc4',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc4',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc5',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc5',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc5',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc6',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc6',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc6',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc7',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc7',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc7',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc8',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc8',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc8',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc9',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc9',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc9',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc10',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc10',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc10',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc11',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc11',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc11',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc12',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc12',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc12',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc13',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc13',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc13',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc14',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc14',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc14',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc15',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc15',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc15',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc16',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc16',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc16',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc17',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc17',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc17',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc18',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc18',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc18',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc19',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc19',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc19',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc20',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc20',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc20',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc21',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc21',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc21',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc22',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc22',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc22',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc23',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc23',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc23',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc24',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc24',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc24',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc25',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc25',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc25',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc26',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc26',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc26',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc27',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc27',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc27',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc28',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc28',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc28',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc29',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc29',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc29',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc30',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc30',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc30',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc31',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc31',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc31',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc32',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc32',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc32',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc33',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc33',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc33',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc34',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc34',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc34',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc35',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc35',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc35',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc36',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc36',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc36',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc37',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc37',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc37',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc38',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc38',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc38',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc39',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc39',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc39',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc40',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc40',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc40',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc41',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc41',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc41',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc42',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc42',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc42',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc43',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc43',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc43',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc44',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc44',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc44',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc45',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc45',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc45',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc46',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc46',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc46',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc47',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc47',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc47',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc48',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc48',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc48',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc49',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc49',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc49',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc50',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc50',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc50',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc51',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc51',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc51',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc52',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc52',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc52',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc53',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc53',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc53',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc54',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc54',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc54',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc55',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc55',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc55',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc56',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc56',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc56',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc57',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc57',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc57',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc58',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc58',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc58',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc59',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc59',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc59',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc60',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc60',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc60',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc61',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc61',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc61',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc62',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc62',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc62',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc63',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc63',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc63',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc64',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc64',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc64',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc65',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc65',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc65',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc66',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc66',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc66',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc67',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc67',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc67',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc68',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc68',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc68',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc69',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc69',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc69',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc70',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc70',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc70',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc71',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc71',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc71',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc72',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc72',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc72',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc73',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc73',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc73',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc74',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc74',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc74',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc75',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc75',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc75',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc76',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc76',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc76',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc77',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc77',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc77',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc78',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc78',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc78',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc79',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc79',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc79',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc80',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc80',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc80',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc81',insNum_seq.nextval,'2005.02	서울대학교 의과대학원 의학과 (의학박사)');
+insert into institute values('doc81',insNum_seq.nextval,'1996.02	울산대학교 의과대학원 의학과 (의학석사)');
+insert into institute values('doc81',insNum_seq.nextval,'1991.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc82',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc82',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc82',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc83',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc83',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc83',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc84',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc84',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc84',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc85',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc85',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc85',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc86',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc86',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc86',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc87',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc87',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc87',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc88',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc88',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc88',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc89',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc89',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc89',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc90',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc90',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc90',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc91',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc91',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc91',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc92',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc92',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc92',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc93',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc93',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc93',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc94',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc94',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc94',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc95',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc95',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc95',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc96',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc96',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc96',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc97',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc97',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc97',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc98',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc98',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc98',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc99',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc99',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc99',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc100',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc100',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc100',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc101',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc101',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc101',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc102',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc102',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc102',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc103',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc103',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc103',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc104',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc104',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc104',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc105',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc105',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc105',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc106',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc106',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc106',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc107',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc107',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc107',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc108',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc108',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc108',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc109',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc109',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc109',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc110',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc110',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc110',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc111',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc111',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc111',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc112',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc112',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc112',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc113',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc113',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc113',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc114',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc114',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc114',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc115',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc115',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc115',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc116',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc116',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc116',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc117',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc117',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc117',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc118',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc118',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc118',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc119',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc119',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc119',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc120',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc120',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc120',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc121',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc121',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc121',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc122',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc122',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc122',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc123',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc123',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc123',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc124',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc124',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc124',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc125',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc125',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc125',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc126',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc126',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc126',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc127',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc127',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc127',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc128',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc128',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc128',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc129',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc129',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc129',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc130',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc130',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc130',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc131',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc131',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc131',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc132',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc132',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc132',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc133',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc133',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc133',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc134',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc134',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc134',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc135',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc135',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc135',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc136',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc136',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc136',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc137',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc137',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc137',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc138',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc138',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc138',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc139',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc139',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc139',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+insert into institute values('doc140',insNum_seq.nextval,'1990.02	서울대학교 대학원 의학과 (박사)');
+insert into institute values('doc140',insNum_seq.nextval,'1987.02	서울대학교 대학원 의학과 (석사)');
+insert into institute values('doc140',insNum_seq.nextval,'1979.02	서울대학교 의과대학 졸업 (의학사)');
+
+
+-- 치료분야
+CREATE TABLE cure (
+	docNo    VARCHAR2(6)  NOT NULL, -- 의사번호
+	cureNum  NUMBER       NOT NULL, -- 치료시퀀스
+	cureName VARCHAR2(40) NOT NULL  -- 질병이름
+);
+
+-- 치료분야
+ALTER TABLE cure
+ADD CONSTRAINT PK_cure -- 치료분야 기본키
+PRIMARY KEY (docNo, cureNum);   -- 의사번호 -- 치료시퀀스
+
+COMMENT ON TABLE cure IS '치료분야'; -- 치료분야
+COMMENT ON COLUMN cure.docNo IS '의사번호'; -- 의사번호
+COMMENT ON COLUMN cure.cureNum IS '치료시퀀스'; -- 치료시퀀스
+COMMENT ON COLUMN cure.cureName IS '질병이름'; -- 질병이름
+
+insert into cure values('doc1',cure_seq.nextval,'면역저하자감염');
+insert into cure values('doc1',cure_seq.nextval,'불명열');
+insert into cure values('doc1',cure_seq.nextval,'폐렴');
+insert into cure values('doc1',cure_seq.nextval,'성인예방접종');
+insert into cure values('doc1',cure_seq.nextval,'림프절염');
+insert into cure values('doc1',cure_seq.nextval,'감염성 심내막염');
+insert into cure values('doc1',cure_seq.nextval,'급성신우신염');
+insert into cure values('doc1',cure_seq.nextval,'방광염');
+insert into cure values('doc1',cure_seq.nextval,'뇌수막염');
+insert into cure values('doc1',cure_seq.nextval,'척추염');
+insert into cure values('doc1',cure_seq.nextval,'말라리아');
+insert into cure values('doc1',cure_seq.nextval,'수두');
+insert into cure values('doc1',cure_seq.nextval,'대상포진');
+insert into cure values('doc2',cure_seq.nextval,'성형외과마취');
+insert into cure values('doc2',cure_seq.nextval,'비뇨의학과마취');
+insert into cure values('doc3',cure_seq.nextval,'산과');
+insert into cure values('doc3',cure_seq.nextval,'분만');
+insert into cure values('doc3',cure_seq.nextval,'고위험임신');
+insert into cure values('doc3',cure_seq.nextval,'비정상 임산부진단');
+insert into cure values('doc3',cure_seq.nextval,'태아기형 산전진단');
+insert into cure values('doc3',cure_seq.nextval,'생식유전');
+insert into cure values('doc4',cure_seq.nextval,'뇌졸증');
+insert into cure values('doc4',cure_seq.nextval,'일과성허혈발작');
+insert into cure values('doc4',cure_seq.nextval,'경동맥 협착');
+insert into cure values('doc4',cure_seq.nextval,'모야모야 병');
+insert into cure values('doc4',cure_seq.nextval,'뇌혈류순환장애');
+insert into cure values('doc4',cure_seq.nextval,'편두통');
+insert into cure values('doc4',cure_seq.nextval,'두통질환');
+insert into cure values('doc4',cure_seq.nextval,'심차 신경통');
+insert into cure values('doc4',cure_seq.nextval,'긴장형 두통');
+insert into cure values('doc4',cure_seq.nextval,'뇌경색');
+insert into cure values('doc5',cure_seq.nextval,'자궁내 발육지연');
+insert into cure values('doc5',cure_seq.nextval,'미숙아');
+insert into cure values('doc5',cure_seq.nextval,'고위험신생아');
+insert into cure values('doc5',cure_seq.nextval,'기타 신생아질환');
+insert into cure values('doc6',cure_seq.nextval,'간암');
+insert into cure values('doc6',cure_seq.nextval,'간경화');
+insert into cure values('doc6',cure_seq.nextval,'급성간염');
+insert into cure values('doc6',cure_seq.nextval,'만성간염');
+insert into cure values('doc7',cure_seq.nextval,'파킨슨병');
+insert into cure values('doc7',cure_seq.nextval,'파킨슨증후군');
+insert into cure values('doc7',cure_seq.nextval,'떨림');
+insert into cure values('doc7',cure_seq.nextval,'소뇌실조증');
+insert into cure values('doc7',cure_seq.nextval,'보행장애');
+insert into cure values('doc7',cure_seq.nextval,'사경');
+insert into cure values('doc7',cure_seq.nextval,'안면경련');
+insert into cure values('doc7',cure_seq.nextval,'이상운동 질환');
+insert into cure values('doc7',cure_seq.nextval,'뇌심부자극술');
+insert into cure values('doc7',cure_seq.nextval,'보톡스 주사치료');
+insert into cure values('doc8',cure_seq.nextval,'급성 부비동염');
+insert into cure values('doc8',cure_seq.nextval,'성인예방접종');
+insert into cure values('doc8',cure_seq.nextval,'림프절염');
+insert into cure values('doc8',cure_seq.nextval,'방광염');
+insert into cure values('doc8',cure_seq.nextval,'폐렴');
+insert into cure values('doc8',cure_seq.nextval,'골수염');
+insert into cure values('doc8',cure_seq.nextval,'괴사 근막염');
+insert into cure values('doc8',cure_seq.nextval,'척추염');
+insert into cure values('doc8',cure_seq.nextval,'당뇨병성 족부감염');
+insert into cure values('doc8',cure_seq.nextval,'뇌수막염');
+insert into cure values('doc8',cure_seq.nextval,'장티푸스');
+insert into cure values('doc8',cure_seq.nextval,'말라리아');
+insert into cure values('doc8',cure_seq.nextval,'리켓차병');
+insert into cure values('doc8',cure_seq.nextval,'수두');
+insert into cure values('doc9',cure_seq.nextval,'급성 부비동염');
+insert into cure values('doc9',cure_seq.nextval,'방과염');
+insert into cure values('doc9',cure_seq.nextval,'골수염');
+insert into cure values('doc9',cure_seq.nextval,'괴사 근막염');
+insert into cure values('doc9',cure_seq.nextval,'척추염');
+insert into cure values('doc9',cure_seq.nextval,'감염성 관절염');
+insert into cure values('doc9',cure_seq.nextval,'연조직염');
+insert into cure values('doc9',cure_seq.nextval,'뇌수막염');
+insert into cure values('doc9',cure_seq.nextval,'칸디다증');
+insert into cure values('doc9',cure_seq.nextval,'불명열');
+insert into cure values('doc9',cure_seq.nextval,'폐외 결핵');
+insert into cure values('doc10',cure_seq.nextval,'감염질환 진료');
+insert into cure values('doc10',cure_seq.nextval,'감염성질환');
+insert into cure values('doc11',cure_seq.nextval,'감염질환 진료');
+insert into cure values('doc11',cure_seq.nextval,'불명열');
+insert into cure values('doc12',cure_seq.nextval,'당뇨병');
+insert into cure values('doc12',cure_seq.nextval,'갑상선질환');
+insert into cure values('doc12',cure_seq.nextval,'고지혈증');
+insert into cure values('doc12',cure_seq.nextval,'뇌하수체질환');
+insert into cure values('doc12',cure_seq.nextval,'대사질환');
+insert into cure values('doc12',cure_seq.nextval,'비만증');
+insert into cure values('doc12',cure_seq.nextval,'내분비질환');
+insert into cure values('doc13',cure_seq.nextval,'골다공증');
+insert into cure values('doc13',cure_seq.nextval,'칼슘대사이상');
+insert into cure values('doc13',cure_seq.nextval,'갱년기 장애');
+insert into cure values('doc13',cure_seq.nextval,'고지혈증');
+insert into cure values('doc13',cure_seq.nextval,'내분비질환');
+insert into cure values('doc14',cure_seq.nextval,'갑상선질환');
+insert into cure values('doc15',cure_seq.nextval,'갑상선질환');
+insert into cure values('doc15',cure_seq.nextval,'당뇨병');
+insert into cure values('doc16',cure_seq.nextval,'소아당뇨');
+insert into cure values('doc16',cure_seq.nextval,'부신질환');
+insert into cure values('doc17',cure_seq.nextval,'폐암');
+insert into cure values('doc17',cure_seq.nextval,'폐결핵');
+insert into cure values('doc17',cure_seq.nextval,'폐질환');
+insert into cure values('doc17',cure_seq.nextval,'폐렴');
+insert into cure values('doc17',cure_seq.nextval,'기관지염');
+insert into cure values('doc17',cure_seq.nextval,'만성 폐쇄성 폐질환');
+insert into cure values('doc18',cure_seq.nextval,'조기 폐암');
+insert into cure values('doc18',cure_seq.nextval,'폐암');
+insert into cure values('doc18',cure_seq.nextval,'폐동맥 고혈압');
+insert into cure values('doc18',cure_seq.nextval,'기관지협착');
+insert into cure values('doc18',cure_seq.nextval,'폐혈관 질환');
+insert into cure values('doc18',cure_seq.nextval,'기관지 내시경');
+insert into cure values('doc19',cure_seq.nextval,'간질성 폐질환');
+insert into cure values('doc19',cure_seq.nextval,'폐섬유화');
+insert into cure values('doc20',cure_seq.nextval,'중환자관리');
+insert into cure values('doc20',cure_seq.nextval,'급성 호흡부전');
+insert into cure values('doc20',cure_seq.nextval,'급성호흡부전증후군');
+insert into cure values('doc21',cure_seq.nextval,'NTM');
+insert into cure values('doc21',cure_seq.nextval,'MOTT');
+insert into cure values('doc21',cure_seq.nextval,'폐결핵');
+insert into cure values('doc21',cure_seq.nextval,'비결핵 항산균 폐질환');
+insert into cure values('doc22',cure_seq.nextval,'귀기형');
+insert into cure values('doc22',cure_seq.nextval,'소이증');
+insert into cure values('doc22',cure_seq.nextval,'안면윤곽술');
+insert into cure values('doc22',cure_seq.nextval,'턱성형');
+insert into cure values('doc22',cure_seq.nextval,'사각턱');
+insert into cure values('doc22',cure_seq.nextval,'주걱턱');
+insert into cure values('doc22',cure_seq.nextval,'무턱');
+insert into cure values('doc22',cure_seq.nextval,'보톡스');
+insert into cure values('doc22',cure_seq.nextval,'흉터성형');
+insert into cure values('doc22',cure_seq.nextval,'코 비대칭');
+insert into cure values('doc22',cure_seq.nextval,'지방이식');
+insert into cure values('doc23',cure_seq.nextval,'유방재건 및 유방성형');
+insert into cure values('doc23',cure_seq.nextval,'부유방');
+insert into cure values('doc24',cure_seq.nextval,'유방재건');
+insert into cure values('doc24',cure_seq.nextval,'얼굴신경마비');
+insert into cure values('doc24',cure_seq.nextval,'흑색종');
+insert into cure values('doc25',cure_seq.nextval,'유방재건');
+insert into cure values('doc25',cure_seq.nextval,'일반재건성형');
+insert into cure values('doc25',cure_seq.nextval,'외상 후 재건');
+insert into cure values('doc26',cure_seq.nextval,'두개골조기유합증');
+insert into cure values('doc26',cure_seq.nextval,'구개구순열');
+insert into cure values('doc26',cure_seq.nextval,'두상변형교정');
+insert into cure values('doc26',cure_seq.nextval,'혈관기형');
+insert into cure values('doc26',cure_seq.nextval,'혈관종');
+insert into cure values('doc26',cure_seq.nextval,'소아안면골절');
+insert into cure values('doc26',cure_seq.nextval,'소아반흔');
+insert into cure values('doc27',cure_seq.nextval,'조혈모세포이식');
+insert into cure values('doc27',cure_seq.nextval,'소아암');
+insert into cure values('doc27',cure_seq.nextval,'백혈병');
+insert into cure values('doc27',cure_seq.nextval,'빈혈');
+insert into cure values('doc27',cure_seq.nextval,'혈소판 감소증');
+insert into cure values('doc28',cure_seq.nextval,'저신장');
+insert into cure values('doc28',cure_seq.nextval,'성조숙');
+insert into cure values('doc28',cure_seq.nextval,'소아비만');
+insert into cure values('doc28',cure_seq.nextval,'당뇨병');
+insert into cure values('doc28',cure_seq.nextval,'요붕증');
+insert into cure values('doc28',cure_seq.nextval,'터너 증후군');
+insert into cure values('doc28',cure_seq.nextval,'저칼슘혈증');
+insert into cure values('doc28',cure_seq.nextval,'갑상선질환');
+insert into cure values('doc28',cure_seq.nextval,'선청성대사질환');
+insert into cure values('doc28',cure_seq.nextval,'연골무형성증');
+insert into cure values('doc29',cure_seq.nextval,'선천성 심장병');
+insert into cure values('doc29',cure_seq.nextval,'심도자치료술');
+insert into cure values('doc29',cure_seq.nextval,'태아심장질환');
+insert into cure values('doc29',cure_seq.nextval,'가와사끼병');
+insert into cure values('doc30',cure_seq.nextval,'신경모세포종');
+insert into cure values('doc30',cure_seq.nextval,'뇌종양');
+insert into cure values('doc30',cure_seq.nextval,'소아암');
+insert into cure values('doc30',cure_seq.nextval,'조혈모세포이식');
+insert into cure values('doc31',cure_seq.nextval,'위암');
+insert into cure values('doc31',cure_seq.nextval,'위암수술');
+insert into cure values('doc31',cure_seq.nextval,'복강경수술');
+insert into cure values('doc32',cure_seq.nextval,'건망증');
+insert into cure values('doc32',cure_seq.nextval,'수두증');
+insert into cure values('doc32',cure_seq.nextval,'실어증');
+insert into cure values('doc32',cure_seq.nextval,'언어장애');
+insert into cure values('doc32',cure_seq.nextval,'치매');
+insert into cure values('doc32',cure_seq.nextval,'치매예방');
+insert into cure values('doc32',cure_seq.nextval,'기억장애');
+insert into cure values('doc32',cure_seq.nextval,'기억상실증');
+insert into cure values('doc32',cure_seq.nextval,'노망');
+insert into cure values('doc32',cure_seq.nextval,'알쯔하이머병');
+insert into cure values('doc32',cure_seq.nextval,'혈관성 치매');
+insert into cure values('doc33',cure_seq.nextval,'뇌전증');
+insert into cure values('doc33',cure_seq.nextval,'경령선 질환');
+insert into cure values('doc33',cure_seq.nextval,'수면장애');
+insert into cure values('doc33',cure_seq.nextval,'실신');
+insert into cure values('doc33',cure_seq.nextval,'일과성 의식장애');
+insert into cure values('doc33',cure_seq.nextval,'뇌전증 수술');
+insert into cure values('doc34',cure_seq.nextval,'다발성 경화증');
+insert into cure values('doc34',cure_seq.nextval,'근육');
+insert into cure values('doc34',cure_seq.nextval,'말초신경질환');
+insert into cure values('doc34',cure_seq.nextval,'척수질환');
+insert into cure values('doc34',cure_seq.nextval,'근이양증');
+insert into cure values('doc34',cure_seq.nextval,'신경병성 통증질환');
+insert into cure values('doc34',cure_seq.nextval,'유전성 말초신경질환');
+insert into cure values('doc34',cure_seq.nextval,'근무력증');
+insert into cure values('doc34',cure_seq.nextval,'루게릭병');
+insert into cure values('doc34',cure_seq.nextval,'당뇨성 신경병');
+insert into cure values('doc34',cure_seq.nextval,'근염');
+insert into cure values('doc35',cure_seq.nextval,'간암');
+insert into cure values('doc35',cure_seq.nextval,'담낭암');
+insert into cure values('doc35',cure_seq.nextval,'담석증');
+insert into cure values('doc35',cure_seq.nextval,'췌장암');
+insert into cure values('doc35',cure_seq.nextval,'총담관 낭종');
+insert into cure values('doc35',cure_seq.nextval,'췌장 낭종');
+insert into cure values('doc35',cure_seq.nextval,'만성 췌장염');
+insert into cure values('doc35',cure_seq.nextval,'담낭암수술');
+insert into cure values('doc35',cure_seq.nextval,'담도암수술');
+insert into cure values('doc35',cure_seq.nextval,'췌장암수술');
+insert into cure values('doc36',cure_seq.nextval,'간암');
+insert into cure values('doc36',cure_seq.nextval,'담낭암');
+insert into cure values('doc36',cure_seq.nextval,'췌장암');
+insert into cure values('doc36',cure_seq.nextval,'만성 췌장염');
+insert into cure values('doc36',cure_seq.nextval,'췌장낭종');
+insert into cure values('doc36',cure_seq.nextval,'담석증');
+insert into cure values('doc36',cure_seq.nextval,'담낭암수술');
+insert into cure values('doc36',cure_seq.nextval,'담도암수술');
+insert into cure values('doc36',cure_seq.nextval,'췌장암수술');
+insert into cure values('doc37',cure_seq.nextval,'요통');
+insert into cure values('doc37',cure_seq.nextval,'허리디스크');
+insert into cure values('doc37',cure_seq.nextval,'목디스크');
+insert into cure values('doc37',cure_seq.nextval,'척추종양');
+insert into cure values('doc37',cure_seq.nextval,'척추관 협착증');
+insert into cure values('doc37',cure_seq.nextval,'척수혈관기형');
+insert into cure values('doc38',cure_seq.nextval,'뇌종양');
+insert into cure values('doc38',cure_seq.nextval,'뇌기저부');
+insert into cure values('doc38',cure_seq.nextval,'삼차신경통');
+insert into cure values('doc38',cure_seq.nextval,'안면경련');
+insert into cure values('doc39',cure_seq.nextval,'소아신경외과질환');
+insert into cure values('doc39',cure_seq.nextval,'모야모야 병');
+insert into cure values('doc39',cure_seq.nextval,'수두증');
+insert into cure values('doc39',cure_seq.nextval,'선청성두개골기형');
+insert into cure values('doc39',cure_seq.nextval,'지방종척수수막류');
+insert into cure values('doc39',cure_seq.nextval,'척수수막류');
+insert into cure values('doc39',cure_seq.nextval,'소아편마비');
+insert into cure values('doc39',cure_seq.nextval,'소아중풍');
+insert into cure values('doc39',cure_seq.nextval,'소아뇌전증');
+insert into cure values('doc39',cure_seq.nextval,'소아뇌종양');
+insert into cure values('doc39',cure_seq.nextval,'기형');
+insert into cure values('doc40',cure_seq.nextval,'뇌졸중');
+insert into cure values('doc40',cure_seq.nextval,'뇌혈관질환');
+insert into cure values('doc40',cure_seq.nextval,'뇌전증수술');
+insert into cure values('doc41',cure_seq.nextval,'척추종양');
+insert into cure values('doc41',cure_seq.nextval,'요통');
+insert into cure values('doc41',cure_seq.nextval,'좌골신경통');
+insert into cure values('doc41',cure_seq.nextval,'디스크내시경수술');
+insert into cure values('doc41',cure_seq.nextval,'척추외상');
+insert into cure values('doc41',cure_seq.nextval,'목디스크');
+insert into cure values('doc42',cure_seq.nextval,'누기');
+insert into cure values('doc42',cure_seq.nextval,'눈꺼풀');
+insert into cure values('doc42',cure_seq.nextval,'눈주변 부종양');
+insert into cure values('doc42',cure_seq.nextval,'갑상선 안증');
+insert into cure values('doc42',cure_seq.nextval,'안성형');
+insert into cure values('doc42',cure_seq.nextval,'안와');
+insert into cure values('doc43',cure_seq.nextval,'백내장');
+insert into cure values('doc43',cure_seq.nextval,'녹내장');
+insert into cure values('doc44',cure_seq.nextval,'망막질환');
+insert into cure values('doc44',cure_seq.nextval,'황반질환');
+insert into cure values('doc44',cure_seq.nextval,'당뇨 망막병증');
+insert into cure values('doc45',cure_seq.nextval,'사시');
+insert into cure values('doc45',cure_seq.nextval,'시신경염');
+insert into cure values('doc45',cure_seq.nextval,'마비사시');
+insert into cure values('doc45',cure_seq.nextval,'시신경 위축');
+insert into cure values('doc45',cure_seq.nextval,'눈떨림');
+insert into cure values('doc45',cure_seq.nextval,'근무력증');
+insert into cure values('doc45',cure_seq.nextval,'소아안과');
+insert into cure values('doc46',cure_seq.nextval,'당뇨 망막병증');
+insert into cure values('doc46',cure_seq.nextval,'망막 및 유리체질환');
+insert into cure values('doc46',cure_seq.nextval,'황반변성');
+insert into cure values('doc46',cure_seq.nextval,'안내종양');
+insert into cure values('doc46',cure_seq.nextval,'포도막염');
+insert into cure values('doc47',cure_seq.nextval,'신경영상의학');
+insert into cure values('doc48',cure_seq.nextval,'간암');
+insert into cure values('doc48',cure_seq.nextval,'담낭암');
+insert into cure values('doc48',cure_seq.nextval,'복부영상의학');
+insert into cure values('doc48',cure_seq.nextval,'복부의 암');
+insert into cure values('doc48',cure_seq.nextval,'간의양성종양');
+insert into cure values('doc49',cure_seq.nextval,'폐암');
+insert into cure values('doc49',cure_seq.nextval,'폐섬유화');
+insert into cure values('doc49',cure_seq.nextval,'자기공명영상');
+insert into cure values('doc50',cure_seq.nextval,'신경영상의학');
+insert into cure values('doc51',cure_seq.nextval,'인터벤션영상의학');
+insert into cure values('doc51',cure_seq.nextval,'중재적 심혈관시술');
+insert into cure values('doc51',cure_seq.nextval,'혈관기형');
+insert into cure values('doc52',cure_seq.nextval,'간이식');
+insert into cure values('doc52',cure_seq.nextval,'히르쉬스프룽병');
+insert into cure values('doc52',cure_seq.nextval,'담도폐쇄');
+insert into cure values('doc52',cure_seq.nextval,'간담도질환');
+insert into cure values('doc52',cure_seq.nextval,'복부의 암');
+insert into cure values('doc52',cure_seq.nextval,'선천성기형');
+insert into cure values('doc53',cure_seq.nextval,'소장이식');
+insert into cure values('doc53',cure_seq.nextval,'식도폐쇄증');
+insert into cure values('doc53',cure_seq.nextval,'신장이식');
+insert into cure values('doc53',cure_seq.nextval,'유문부협착증');
+insert into cure values('doc53',cure_seq.nextval,'장이상기형');
+insert into cure values('doc53',cure_seq.nextval,'탈장');
+insert into cure values('doc53',cure_seq.nextval,'항문직장기형');
+insert into cure values('doc53',cure_seq.nextval,'항문질환');
+insert into cure values('doc53',cure_seq.nextval,'횡경막의 장애');
+insert into cure values('doc54',cure_seq.nextval,'경부암');
+insert into cure values('doc54',cure_seq.nextval,'복막투석용 도관수술');
+insert into cure values('doc54',cure_seq.nextval,'선청성 소화기기형');
+insert into cure values('doc54',cure_seq.nextval,'소아복강경수술');
+insert into cure values('doc54',cure_seq.nextval,'항문직장기형');
+insert into cure values('doc55',cure_seq.nextval,'히르쉬스프룽병');
+insert into cure values('doc55',cure_seq.nextval,'변비');
+insert into cure values('doc55',cure_seq.nextval,'탈장');
+insert into cure values('doc55',cure_seq.nextval,'소장재활');
+insert into cure values('doc55',cure_seq.nextval,'단장증후군');
+insert into cure values('doc56',cure_seq.nextval,'소장부전');
+insert into cure values('doc56',cure_seq.nextval,'소장이식');
+insert into cure values('doc56',cure_seq.nextval,'소아 간이식');
+insert into cure values('doc56',cure_seq.nextval,'소아복강경수술');
+insert into cure values('doc56',cure_seq.nextval,'탈장');
+insert into cure values('doc56',cure_seq.nextval,'복막투석용 도관수술');
+insert into cure values('doc57',cure_seq.nextval,'위암');
+insert into cure values('doc57',cure_seq.nextval,'복강경수술');
+insert into cure values('doc57',cure_seq.nextval,'위암수술');
+insert into cure values('doc57',cure_seq.nextval,'로봇수술');
+insert into cure values('doc58',cure_seq.nextval,'간암');
+insert into cure values('doc58',cure_seq.nextval,'담석증');
+insert into cure values('doc58',cure_seq.nextval,'췌장암');
+insert into cure values('doc58',cure_seq.nextval,'총담관 낭종');
+insert into cure values('doc58',cure_seq.nextval,'췌장낭종');
+insert into cure values('doc58',cure_seq.nextval,'담도암수술');
+insert into cure values('doc59',cure_seq.nextval,'중환자 의학');
+insert into cure values('doc60',cure_seq.nextval,'간이식');
+insert into cure values('doc60',cure_seq.nextval,'간암');
+insert into cure values('doc60',cure_seq.nextval,'간 양성종양');
+insert into cure values('doc60',cure_seq.nextval,'복강경수술');
+insert into cure values('doc61',cure_seq.nextval,'간이식');
+insert into cure values('doc61',cure_seq.nextval,'간암');
+insert into cure values('doc61',cure_seq.nextval,'간 양성종양');
+insert into cure values('doc61',cure_seq.nextval,'복강경수술');
+insert into cure values('doc62',cure_seq.nextval,'신장이식');
+insert into cure values('doc62',cure_seq.nextval,'후복막의 종양');
+insert into cure values('doc62',cure_seq.nextval,'장기 및 조직 이식');
+insert into cure values('doc62',cure_seq.nextval,'췌장이식');
+insert into cure values('doc62',cure_seq.nextval,'혈액투석용 혈관수술');
+insert into cure values('doc63',cure_seq.nextval,'외과 응급 진료');
+insert into cure values('doc64',cure_seq.nextval,'간이식');
+insert into cure values('doc64',cure_seq.nextval,'간암');
+insert into cure values('doc64',cure_seq.nextval,'복강경수술');
+insert into cure values('doc65',cure_seq.nextval,'신장이식');
+insert into cure values('doc65',cure_seq.nextval,'후복막의 종양');
+insert into cure values('doc65',cure_seq.nextval,'복강내 육종');
+insert into cure values('doc65',cure_seq.nextval,'췌장이식');
+insert into cure values('doc65',cure_seq.nextval,'췌장세포이식');
+insert into cure values('doc66',cure_seq.nextval,'신장이식');
+insert into cure values('doc66',cure_seq.nextval,'후복막의 종양');
+insert into cure values('doc66',cure_seq.nextval,'췌장이식');
+insert into cure values('doc66',cure_seq.nextval,'혈액투석용 혈관수술');
+insert into cure values('doc66',cure_seq.nextval,'복막투석용');
+insert into cure values('doc67',cure_seq.nextval,'간이식');
+insert into cure values('doc67',cure_seq.nextval,'간암');
+insert into cure values('doc67',cure_seq.nextval,'간 양성종양');
+insert into cure values('doc67',cure_seq.nextval,'복강경수술');
+insert into cure values('doc68',cure_seq.nextval,'간이식');
+insert into cure values('doc68',cure_seq.nextval,'간암');
+insert into cure values('doc68',cure_seq.nextval,'간 양성종양');
+insert into cure values('doc68',cure_seq.nextval,'복강경수술');
+insert into cure values('doc69',cure_seq.nextval,'줄기세포 치료');
+insert into cure values('doc69',cure_seq.nextval,'뇌졸중예방수술');
+insert into cure values('doc69',cure_seq.nextval,'복부대동맥류');
+insert into cure values('doc69',cure_seq.nextval,'하지정맥류');
+insert into cure values('doc70',cure_seq.nextval,'선천성 혈관기형');
+insert into cure values('doc70',cure_seq.nextval,'레이노드 증후군');
+insert into cure values('doc70',cure_seq.nextval,'심부정맥혈전증');
+insert into cure values('doc70',cure_seq.nextval,'림프부종');
+insert into cure values('doc71',cure_seq.nextval,'복부대동맥류');
+insert into cure values('doc71',cure_seq.nextval,'대동맥 중재시술');
+insert into cure values('doc71',cure_seq.nextval,'말초혈관 중재시술');
+insert into cure values('doc71',cure_seq.nextval,'경동맥협착증');
+insert into cure values('doc71',cure_seq.nextval,'당뇨병성 족부감염');
+insert into cure values('doc71',cure_seq.nextval,'하지정맥류');
+insert into cure values('doc72',cure_seq.nextval,'혈액투석용 혈관수술');
+insert into cure values('doc72',cure_seq.nextval,'복막투석용 도관수술');
+insert into cure values('doc72',cure_seq.nextval,'복부대동맥류');
+insert into cure values('doc72',cure_seq.nextval,'대동맥 중재시술');
+insert into cure values('doc72',cure_seq.nextval,'말초혈관 중재시술');
+insert into cure values('doc73',cure_seq.nextval,'경동맥협착증');
+insert into cure values('doc73',cure_seq.nextval,'당뇨병성 족부감염');
+insert into cure values('doc73',cure_seq.nextval,'하지정맥류');
+insert into cure values('doc73',cure_seq.nextval,'혈액투석용 혈관수술');
+insert into cure values('doc73',cure_seq.nextval,'복막투석용 도관수술');
+insert into cure values('doc74',cure_seq.nextval,'알레르기비염');
+insert into cure values('doc74',cure_seq.nextval,'코골이');
+insert into cure values('doc74',cure_seq.nextval,'축농증');
+insert into cure values('doc74',cure_seq.nextval,'수면무호흡증');
+insert into cure values('doc75',cure_seq.nextval,'두경부 재건');
+insert into cure values('doc75',cure_seq.nextval,'설암');
+insert into cure values('doc75',cure_seq.nextval,'구강암');
+insert into cure values('doc75',cure_seq.nextval,'얼굴신경');
+insert into cure values('doc76',cure_seq.nextval,'축농증');
+insert into cure values('doc76',cure_seq.nextval,'알레르기비염');
+insert into cure values('doc77',cure_seq.nextval,'후두암');
+insert into cure values('doc77',cure_seq.nextval,'감상선암');
+insert into cure values('doc77',cure_seq.nextval,'음성질환');
+insert into cure values('doc77',cure_seq.nextval,'두경부암수술');
+insert into cure values('doc78',cure_seq.nextval,'어지러움');
+insert into cure values('doc78',cure_seq.nextval,'중이염');
+insert into cure values('doc78',cure_seq.nextval,'얼굴신경마비');
+insert into cure values('doc78',cure_seq.nextval,'보청기');
+insert into cure values('doc78',cure_seq.nextval,'인공와우이식');
+insert into cure values('doc79',cure_seq.nextval,'인지');
+insert into cure values('doc79',cure_seq.nextval,'뇌졸중');
+insert into cure values('doc79',cure_seq.nextval,'재활');
+insert into cure values('doc79',cure_seq.nextval,'운동');
+insert into cure values('doc79',cure_seq.nextval,'언어');
+insert into cure values('doc79',cure_seq.nextval,'뇌손상');
+insert into cure values('doc79',cure_seq.nextval,'감각');
+insert into cure values('doc79',cure_seq.nextval,'혈관성 치매');
+insert into cure values('doc79',cure_seq.nextval,'뇌질환');
+insert into cure values('doc79',cure_seq.nextval,'뇌출혈');
+insert into cure values('doc79',cure_seq.nextval,'보톡스');
+insert into cure values('doc80',cure_seq.nextval,'족부질환');
+insert into cure values('doc80',cure_seq.nextval,'부종');
+insert into cure values('doc80',cure_seq.nextval,'림프부종');
+insert into cure values('doc80',cure_seq.nextval,'암재활');
+insert into cure values('doc80',cure_seq.nextval,'유방암');
+insert into cure values('doc80',cure_seq.nextval,'발');
+insert into cure values('doc80',cure_seq.nextval,'발목');
+insert into cure values('doc80',cure_seq.nextval,'염좌');
+insert into cure values('doc80',cure_seq.nextval,'평발');
+insert into cure values('doc80',cure_seq.nextval,'당뇨병성 족부질환');
+insert into cure values('doc81',cure_seq.nextval,'경추');
+insert into cure values('doc81',cure_seq.nextval,'흉추');
+insert into cure values('doc81',cure_seq.nextval,'요추');
+insert into cure values('doc81',cure_seq.nextval,'추간판 질환');
+insert into cure values('doc81',cure_seq.nextval,'척추 염증성 질환');
+insert into cure values('doc81',cure_seq.nextval,'척추통');
+insert into cure values('doc81',cure_seq.nextval,'척수질환');
+insert into cure values('doc81',cure_seq.nextval,'척수손상');
+insert into cure values('doc81',cure_seq.nextval,'사지마비');
+insert into cure values('doc82',cure_seq.nextval,'소아');
+insert into cure values('doc82',cure_seq.nextval,'소아재활');
+insert into cure values('doc82',cure_seq.nextval,'미숙아');
+insert into cure values('doc82',cure_seq.nextval,'발달지연');
+insert into cure values('doc82',cure_seq.nextval,'뇌성마비 진단');
+insert into cure values('doc82',cure_seq.nextval,'뇌성마비 재활');
+insert into cure values('doc82',cure_seq.nextval,'소아 경직');
+insert into cure values('doc82',cure_seq.nextval,'섭식장애');
+insert into cure values('doc82',cure_seq.nextval,'언어발달지연');
+insert into cure values('doc83',cure_seq.nextval,'어깨');
+insert into cure values('doc83',cure_seq.nextval,'오십견');
+insert into cure values('doc83',cure_seq.nextval,'관절염');
+insert into cure values('doc83',cure_seq.nextval,'근골격계');
+insert into cure values('doc83',cure_seq.nextval,'요통');
+insert into cure values('doc83',cure_seq.nextval,'경추');
+insert into cure values('doc83',cure_seq.nextval,'디스크증후군');
+insert into cure values('doc83',cure_seq.nextval,'척추');
+insert into cure values('doc83',cure_seq.nextval,'척수');
+insert into cure values('doc83',cure_seq.nextval,'척추협착');
+insert into cure values('doc83',cure_seq.nextval,'무릎');
+insert into cure values('doc83',cure_seq.nextval,'골반');
+insert into cure values('doc84',cure_seq.nextval,'대퇴골두 무혈성 괴사');
+insert into cure values('doc84',cure_seq.nextval,'고관절 표면 치환술');
+insert into cure values('doc84',cure_seq.nextval,'고관절 인공관절 치환술');
+insert into cure values('doc85',cure_seq.nextval,'척추협착증');
+insert into cure values('doc85',cure_seq.nextval,'허리디스크');
+insert into cure values('doc85',cure_seq.nextval,'목디스크');
+insert into cure values('doc85',cure_seq.nextval,'척추종양');
+insert into cure values('doc85',cure_seq.nextval,'척추질환');
+insert into cure values('doc85',cure_seq.nextval,'좌골신경통');
+insert into cure values('doc85',cure_seq.nextval,'척추측만증');
+insert into cure values('doc86',cure_seq.nextval,'소아정형');
+insert into cure values('doc86',cure_seq.nextval,'선천성기형');
+insert into cure values('doc86',cure_seq.nextval,'뇌성마비');
+insert into cure values('doc86',cure_seq.nextval,'사지연장술');
+insert into cure values('doc86',cure_seq.nextval,'하지변형 교정술');
+insert into cure values('doc87',cure_seq.nextval,'좌골신경통');
+insert into cure values('doc87',cure_seq.nextval,'척추골절');
+insert into cure values('doc87',cure_seq.nextval,'요통');
+insert into cure values('doc87',cure_seq.nextval,'하지방사통');
+insert into cure values('doc87',cure_seq.nextval,'목디스크');
+insert into cure values('doc87',cure_seq.nextval,'척추질환');
+insert into cure values('doc87',cure_seq.nextval,'경추');
+insert into cure values('doc87',cure_seq.nextval,'요추');
+insert into cure values('doc87',cure_seq.nextval,'흉추질환');
+insert into cure values('doc87',cure_seq.nextval,'허리디스크');
+insert into cure values('doc87',cure_seq.nextval,'척추외상');
+insert into cure values('doc88',cure_seq.nextval,'손목관절');
+insert into cure values('doc88',cure_seq.nextval,'인공관절 치환술');
+insert into cure values('doc88',cure_seq.nextval,'말초신경 질환');
+insert into cure values('doc88',cure_seq.nextval,'관절경');
+insert into cure values('doc89',cure_seq.nextval,'악교정수술');
+insert into cure values('doc89',cure_seq.nextval,'임플란트');
+insert into cure values('doc89',cure_seq.nextval,'악안면외상 및 골절');
+insert into cure values('doc89',cure_seq.nextval,'사랑니');
+insert into cure values('doc90',cure_seq.nextval,'신경치료');
+insert into cure values('doc90',cure_seq.nextval,'미세현미경수술');
+insert into cure values('doc90',cure_seq.nextval,'치아이식술');
+insert into cure values('doc90',cure_seq.nextval,'의도적 치아재식술');
+insert into cure values('doc91',cure_seq.nextval,'만성 치주염');
+insert into cure values('doc91',cure_seq.nextval,'치주성형');
+insert into cure values('doc91',cure_seq.nextval,'임플란트');
+insert into cure values('doc92',cure_seq.nextval,'임플란트');
+insert into cure values('doc92',cure_seq.nextval,'틀니');
+insert into cure values('doc92',cure_seq.nextval,'심미보철');
+insert into cure values('doc93',cure_seq.nextval,'수술교정');
+insert into cure values('doc93',cure_seq.nextval,'턱교정');
+insert into cure values('doc93',cure_seq.nextval,'치열교정');
+insert into cure values('doc94',cure_seq.nextval,'소아 피부염');
+insert into cure values('doc94',cure_seq.nextval,'아토피피부염');
+insert into cure values('doc94',cure_seq.nextval,'담마진');
+insert into cure values('doc94',cure_seq.nextval,'유전성 피부질환');
+insert into cure values('doc94',cure_seq.nextval,'접촉피부염');
+insert into cure values('doc94',cure_seq.nextval,'알레르기성 질환');
+insert into cure values('doc95',cure_seq.nextval,'건선');
+insert into cure values('doc95',cure_seq.nextval,'여드름');
+insert into cure values('doc95',cure_seq.nextval,'혈관종');
+insert into cure values('doc95',cure_seq.nextval,'화염성 모반');
+insert into cure values('doc96',cure_seq.nextval,'피부암');
+insert into cure values('doc96',cure_seq.nextval,'피부발진');
+insert into cure values('doc96',cure_seq.nextval,'손발톱 질환');
+insert into cure values('doc96',cure_seq.nextval,'백반증');
+insert into cure values('doc97',cure_seq.nextval,'레이저 흉터');
+insert into cure values('doc98',cure_seq.nextval,'피부종양');
+insert into cure values('doc99',cure_seq.nextval,'신경 핵의학');
+insert into cure values('doc99',cure_seq.nextval,'핵의학 체내검사');
+insert into cure values('doc99',cure_seq.nextval,'종양 핵의학');
+insert into cure values('doc99',cure_seq.nextval,'심장 핵의학');
+insert into cure values('doc99',cure_seq.nextval,'핵의학 체외검사');
+insert into cure values('doc100',cure_seq.nextval,'신경 핵의학');
+insert into cure values('doc100',cure_seq.nextval,'심장 핵의학');
+insert into cure values('doc100',cure_seq.nextval,'핵의학 체외검사');
+insert into cure values('doc100',cure_seq.nextval,'종양 핵의학');
+insert into cure values('doc100',cure_seq.nextval,'핵의학 체내검사');
+insert into cure values('doc101',cure_seq.nextval,'신경 핵의학');
+insert into cure values('doc101',cure_seq.nextval,'종양 핵의학');
+insert into cure values('doc101',cure_seq.nextval,'핵의학 체외검사');
+insert into cure values('doc101',cure_seq.nextval,'핵의학 체내검사');
+insert into cure values('doc101',cure_seq.nextval,'심장 핵의학');
+insert into cure values('doc102',cure_seq.nextval,'신경 핵의학');
+insert into cure values('doc102',cure_seq.nextval,'심장 핵의학');
+insert into cure values('doc102',cure_seq.nextval,'종양 핵의학');
+insert into cure values('doc102',cure_seq.nextval,'핵의학 체내검사');
+insert into cure values('doc103',cure_seq.nextval,'신경 핵의학');
+insert into cure values('doc103',cure_seq.nextval,'심장 핵의학');
+insert into cure values('doc103',cure_seq.nextval,'종양 핵의학');
+insert into cure values('doc103',cure_seq.nextval,'핵의학 체내검사');
+insert into cure values('doc104',cure_seq.nextval,'판막성형수술');
+insert into cure values('doc104',cure_seq.nextval,'판막치환');
+insert into cure values('doc104',cure_seq.nextval,'부정맥수술');
+insert into cure values('doc104',cure_seq.nextval,'심장이식');
+insert into cure values('doc104',cure_seq.nextval,'만성폐혈전수술');
+insert into cure values('doc105',cure_seq.nextval,'폐암');
+insert into cure values('doc105',cure_seq.nextval,'식도암');
+insert into cure values('doc105',cure_seq.nextval,'흉선종 및 종격동종양');
+insert into cure values('doc105',cure_seq.nextval,'식도협착');
+insert into cure values('doc105',cure_seq.nextval,'폐암수술');
+insert into cure values('doc106',cure_seq.nextval,'폐식도암');
+insert into cure values('doc106',cure_seq.nextval,'폐암수술');
+insert into cure values('doc106',cure_seq.nextval,'식도암');
+insert into cure values('doc106',cure_seq.nextval,'식도암수술');
+insert into cure values('doc107',cure_seq.nextval,'심박동하우회술');
+insert into cure values('doc107',cure_seq.nextval,'관상동맥 우회술');
+insert into cure values('doc107',cure_seq.nextval,'최소절개우회술');
+insert into cure values('doc107',cure_seq.nextval,'소아관상동맥 수술');
+insert into cure values('doc107',cure_seq.nextval,'인공심장');
+insert into cure values('doc108',cure_seq.nextval,'폐암');
+insert into cure values('doc108',cure_seq.nextval,'폐암수술');
+insert into cure values('doc108',cure_seq.nextval,'기관지의 종양');
+insert into cure values('doc108',cure_seq.nextval,'종격동의 종양');
+insert into cure values('doc108',cure_seq.nextval,'난치성 폐결핵');
+insert into cure values('doc109',cure_seq.nextval,'산과');
+insert into cure values('doc109',cure_seq.nextval,'분만');
+insert into cure values('doc109',cure_seq.nextval,'고위험임신');
+insert into cure values('doc109',cure_seq.nextval,'비정상 임산부진단');
+insert into cure values('doc109',cure_seq.nextval,'태아기형 산전진단');
+insert into cure values('doc110',cure_seq.nextval,'일반 부인과 질환');
+insert into cure values('doc110',cure_seq.nextval,'부인암');
+insert into cure values('doc110',cure_seq.nextval,'자궁의 종양');
+insert into cure values('doc110',cure_seq.nextval,'난소의 종양');
+insert into cure values('doc110',cure_seq.nextval,'자궁내시경수술');
+insert into cure values('doc110',cure_seq.nextval,'골반내시경');
+insert into cure values('doc111',cure_seq.nextval,'부인과 내분비질환');
+insert into cure values('doc111',cure_seq.nextval,'양성 부인질환근종');
+insert into cure values('doc111',cure_seq.nextval,'자궁선근종');
+insert into cure values('doc111',cure_seq.nextval,'자궁내막증');
+insert into cure values('doc112',cure_seq.nextval,'일반 부인과 질환');
+insert into cure values('doc112',cure_seq.nextval,'부인암');
+insert into cure values('doc112',cure_seq.nextval,'화학요법');
+insert into cure values('doc112',cure_seq.nextval,'산부인과질환');
+insert into cure values('doc112',cure_seq.nextval,'골반내시경수술');
+insert into cure values('doc113',cure_seq.nextval,'자궁내막증');
+insert into cure values('doc113',cure_seq.nextval,'난소종양');
+insert into cure values('doc113',cure_seq.nextval,'골반내시경수술');
+insert into cure values('doc113',cure_seq.nextval,'난임');
+insert into cure values('doc113',cure_seq.nextval,'피임');
+insert into cure values('doc113',cure_seq.nextval,'여성생식기 이상');
+insert into cure values('doc114',cure_seq.nextval,'성형외과마취');
+insert into cure values('doc114',cure_seq.nextval,'비뇨의학과마취');
+insert into cure values('doc115',cure_seq.nextval,'산과마취');
+insert into cure values('doc115',cure_seq.nextval,'부위마취');
+insert into cure values('doc115',cure_seq.nextval,'급성통증관리');
+insert into cure values('doc116',cure_seq.nextval,'뇌신경마취');
+insert into cure values('doc117',cure_seq.nextval,'심장마취');
+insert into cure values('doc118',cure_seq.nextval,'심장질환');
+insert into cure values('doc118',cure_seq.nextval,'심혈관영상');
+insert into cure values('doc119',cure_seq.nextval,'대장암');
+insert into cure values('doc119',cure_seq.nextval,'유방암');
+insert into cure values('doc119',cure_seq.nextval,'특수방사선치료');
+insert into cure values('doc120',cure_seq.nextval,'폐식도암');
+insert into cure values('doc120',cure_seq.nextval,'두경부암');
+insert into cure values('doc120',cure_seq.nextval,'두개 기저부 종양');
+insert into cure values('doc120',cure_seq.nextval,'특수방사선치료');
+insert into cure values('doc121',cure_seq.nextval,'폐암');
+insert into cure values('doc121',cure_seq.nextval,'비뇨의학암');
+insert into cure values('doc121',cure_seq.nextval,'특수방사선치료');
+insert into cure values('doc122',cure_seq.nextval,'위암');
+insert into cure values('doc122',cure_seq.nextval,'소아암');
+insert into cure values('doc122',cure_seq.nextval,'혈액암');
+insert into cure values('doc122',cure_seq.nextval,'뇌종양');
+insert into cure values('doc122',cure_seq.nextval,'육종');
+insert into cure values('doc122',cure_seq.nextval,'특수방사선치료');
+insert into cure values('doc123',cure_seq.nextval,'협심증');
+insert into cure values('doc123',cure_seq.nextval,'심근경색증');
+insert into cure values('doc124',cure_seq.nextval,'간담관계');
+insert into cure values('doc124',cure_seq.nextval,'위장관계');
+insert into cure values('doc125',cure_seq.nextval,'혈액림프망내계');
+insert into cure values('doc125',cure_seq.nextval,'두경부 병리');
+insert into cure values('doc126',cure_seq.nextval,'소아병리');
+insert into cure values('doc126',cure_seq.nextval,'태반병리');
+insert into cure values('doc126',cure_seq.nextval,'신경병리');
+insert into cure values('doc127',cure_seq.nextval,'폐병리');
+insert into cure values('doc127',cure_seq.nextval,'병리정보');
+insert into cure values('doc128',cure_seq.nextval,'병리연구컨설팅');
+insert into cure values('doc128',cure_seq.nextval,'산부인과병리');
+insert into cure values('doc129',cure_seq.nextval,'강직성 척추염');
+insert into cure values('doc129',cure_seq.nextval,'류마티스 관절염');
+insert into cure values('doc129',cure_seq.nextval,'전신 홍반성 루푸스');
+insert into cure values('doc129',cure_seq.nextval,'류마티스질환');
+insert into cure values('doc129',cure_seq.nextval,'쇼그렌 증후군');
+insert into cure values('doc129',cure_seq.nextval,'경피증');
+insert into cure values('doc130',cure_seq.nextval,'강직성 척추염');
+insert into cure values('doc130',cure_seq.nextval,'전신 홍반성 루푸스');
+insert into cure values('doc130',cure_seq.nextval,'통풍');
+insert into cure values('doc130',cure_seq.nextval,'경피증');
+insert into cure values('doc130',cure_seq.nextval,'골관절염');
+insert into cure values('doc131',cure_seq.nextval,'경피증');
+insert into cure values('doc131',cure_seq.nextval,'골관절염');
+insert into cure values('doc131',cure_seq.nextval,'류마티스 관절염');
+insert into cure values('doc131',cure_seq.nextval,'강직성 척추염');
+insert into cure values('doc131',cure_seq.nextval,'쇼그렌 증후군');
+insert into cure values('doc131',cure_seq.nextval,'통풍');
+insert into cure values('doc132',cure_seq.nextval,'류마티스질환');
+insert into cure values('doc133',cure_seq.nextval,'류마티스질환');
+insert into cure values('doc134',cure_seq.nextval,'간암');
+insert into cure values('doc134',cure_seq.nextval,'간경화');
+insert into cure values('doc134',cure_seq.nextval,'급성간염');
+insert into cure values('doc134',cure_seq.nextval,'만성간염');
+insert into cure values('doc135',cure_seq.nextval,'간암');
+insert into cure values('doc135',cure_seq.nextval,'간경화');
+insert into cure values('doc136',cure_seq.nextval,'간암');
+insert into cure values('doc136',cure_seq.nextval,'간경화');
+insert into cure values('doc136',cure_seq.nextval,'위암');
+insert into cure values('doc136',cure_seq.nextval,'치료내시경');
+insert into cure values('doc136',cure_seq.nextval,'위장질환');
+insert into cure values('doc137',cure_seq.nextval,'역류성식도염');
+insert into cure values('doc137',cure_seq.nextval,'변비');
+insert into cure values('doc137',cure_seq.nextval,'기능성 소화불량');
+insert into cure values('doc137',cure_seq.nextval,'아칼라지아');
+insert into cure values('doc138',cure_seq.nextval,'심부전');
+insert into cure values('doc138',cure_seq.nextval,'심장이식');
+insert into cure values('doc138',cure_seq.nextval,'심근질환');
+insert into cure values('doc138',cure_seq.nextval,'심근염');
+insert into cure values('doc138',cure_seq.nextval,'인공심장');
+insert into cure values('doc139',cure_seq.nextval,'부정맥');
+insert into cure values('doc139',cure_seq.nextval,'실신');
+insert into cure values('doc139',cure_seq.nextval,'인공 심장박동기');
+insert into cure values('doc140',cure_seq.nextval,'부정맥');
+insert into cure values('doc140',cure_seq.nextval,'실신');
+insert into cure values('doc140',cure_seq.nextval,'인공 심장박동기');
+insert into cure values('doc140',cure_seq.nextval,'심장돌연사');
+
+-- 강점
+CREATE TABLE forte (
+	deptNo   VARCHAR2(6)   NOT NULL, -- 의과번호
+	deptForte VARCHAR2(550) -- 강점
+);
+
+-- 강점
+ALTER TABLE forte
+ADD CONSTRAINT PK_forte -- 강점 기본키
+PRIMARY KEY (deptNo); -- 의과번호
+
+COMMENT ON TABLE forte IS '강점'; -- 강점
+COMMENT ON COLUMN forte.deptNo IS '의과번호'; -- 의과번호
+COMMENT ON COLUMN forte.deptForte IS '강점'; -- 강점
+
+insert into forte values('dept1','감염내과에서는 타 과로부터의 자문 또는 협의진료가 매우 중요한 부분을 차지하고 있으며, 다양한 중증 감염질환에 신속히 대처하고 있습니다. 병원 감염을 예방하기 위하여 감염관리실의 활동을 지원하고 감염관리실과 협조하여 병원감염조사에 관여하고 있으며 조사결과를 바탕으로 감염관리 및 예방에 노력하고 있습니다.');
+insert into forte values('dept2','내분비내과에서는 눈, 신장 등 합병증이 심각한 당뇨병을 치료하기 위해 통합진료시스템을 갖춘 당뇨병센터를 운영하고 있으며 진단과 치료의 의미를 넘어 내분비내과 의사, 간호사, 영양사, 운동처방사, 약사, 사회복시자 등 당뇨병과 관련된 전문가 그룹이 팀을 이루어 환자 스스로가 당뇨병을 관리할 수 있도록 환자에 대한 강화된 맞춤 교육 프로그램을 시행 하고 있습니다.');
+insert into forte values('dept3','삼성서울병원 호흡기내과는 다양한 호흡기 질환을 진단, 치료할 뿐만 아니라 기초, 중개 및 임상연구도 활발히 시행하고 있으며 매년 해외 학술지에 다수의 논문을 출판하고 있습니다.');
+insert into forte values('dept4','삼성서울병원 성형외과 유방재건 클리닉은 유방암 수술로 인해 유방이 결손된 환자를 대상으로 자가조직과 보형물을 이용한 여러 가지 다양한 유방 재건성형이 가능해짐에 따라 연간 400여명 이상의 환자를 대상으로 유방외과, 혈액종양내과, 방사선 종양학과, 영상의학과, 병리과 등을 아우르는 다학제간 협진을 통하여 개개인에게 맞춤형 유방재건술을 시행하고 있습니다. ');
+insert into forte values('dept5','신생아중환자실과 소아중환자실을 중심으로 한 중환자 진료체계는 전문적인 수준이라고 할 수 있고 세부전공 분야가 활성화되어 있어 각각의 질병에 대한 전문가를 만나실 수 있습니다.
+다른 병원에서는 볼 수 없는 교수들의 분야별 하루 두 번의 회진은 너무도 유명하답니다.');
+insert into forte values('dept6','뇌졸중센터 2002년 12월 뇌졸중센터를 개소해, 신경과, 신경외과, 영상의학과, 재활의학과의 긴밀한 협조 하에 협력진료 체계를 통해 포괄적 진료와 최첨단 진료와 치료를 제공하고 있습니다. ');
+insert into forte values('dept7','');
+insert into forte values('dept8','소아/사시/ 신경안과 파트에서는 매년 17,000명에 달하는 외래 환자를 진료하고 있으며, 사시에 대한 수술은 연간 600 건 이상으로 국내에서도 손꼽힐 활발한 진료활동을 보이고 있습니다. 다양한 수술 경험을 통한 기술과 노하우를 바탕으로 각종 사시 환자의 다양한 수술을 안전하고 정확하게 시행하고 있습니다.');
+insert into forte values('dept9','흉부영상의학분과에는 7명의 교수가 근무하고 있으며, 폐암을 비롯하여 폐와 종격에 발생하는 다양한 질환에 대한 진단영상 판독 업무을 수행하고 있습니다. 또한 폐 병변의 정확한 병리학적 확진을 위해 영상유도하 경피적폐생검술을 시행하여 폐암 조직의 일부를 채취하는 역할도 담당하고 있습니다. ');
+insert into forte values('dept10','선천성 소화기 기형 (duodenal atresia, esophageal atresia, congenital diaphragm hernia)의 신생아 시기 수술부터 청소년의 위식도역류까지 다양한 수술을 년간 100명 정도 시행하고 있으며 이중 신생아가 약 30%이상을 차지합니다.');
+insert into forte values('dept11','첨단 수술기법인 Robotic surgery 를 간, 대장, 위를 포함한 소화기외과 수술 전체에 도입하여 확대하여 시행하고 있습니다. 복강경 술기가 국내 최고 수준으로 향상되어 예전에는 맹장염이나 담낭염 등 양성질환에 제한적으로 실시하던 Single incision laparoscopy 를 위, 대장의 악성종양을 대상으로 활발히 시행하고 있습니다.');
+insert into forte values('dept12','진료뿐만 아니라 연구에도 힘을 쏟아 매해 우수한 연구 업적을 발표하고 있으며, 훌륭한 외과 의사를 육성하기 위해 국내 뿐만 아니라 세계 각국에서 지원하는 의사들을 위해 다양한 교육 프로그램을 운영하고 있습니다.');
+insert into forte values('dept13','이식외과에서는 매년 100건이 넘는 간이식, 신장이식 수술을 시행하고 있습니다. 간 이식 수술의 경우는 90%이상의 성공률을 보이며, 신장이식 수술의 경우는 사망률이 제로로 그 치료성적이 매우 좋습니다. 제 1형 당뇨병 환자에서 췌장 이식보다 안전한 랑게르한스섬 (췌장 속에서 인슐린을 분비하는 세포군)이식은 삼성서울병원 이식외과이기에 가능하였습니다.');
+insert into forte values('dept14','혈관외과의 주요 진료 분야는 동맥질환, 정맥질환, 임파질환으로 대별할 수 있으며 동맥질환으로는 복부대동맥, 경동맥, 하지동맥, 기타 복부 장기로 가는 동맥 질환을 들 수 있으며, 정맥 질환은 상하지의 심부정맥 혈전증 및 정맥류가 대표적인 질환이다. 임파 질환은 임파부종을 들 수 있다. 본과에서 운영하는 대표적인 클리닉은 선천성 혈관기형 클리닉이 있다.');
+insert into forte values('dept15','머리와 목에 발생한 양성 및 악성 질환을 다루는 분과로서, 성대 결절과 같은 음성 질환을 포함하여 인후두역류질환, 타석증 같은 머리와 목 부분의 염증성 질환 및 양성 종양의 치료와 함께, 구강암, 후두암, 인두암, 부비동암, 타액선암 등과 같은 암을 진단하고 수술적 치료를 시행합니다. ');
+insert into forte values('dept16','삼성서울병원 재활의학과는 각 staff 별로 뇌신경센터, 소아청소년센터, 골관절센터, 암 병원 통합치유센터, 척추센터에서 세분화되고 전문화된 진단 및 치료를 시행하고 있습니다.');
+insert into forte values('dept17','정형외과는 매년 국제 SCI(E) 저널에 20개가 넘는 자체 연구 논문을 싣고 있으며 본원과 국내에서 정형외과 분야를 선도하고 있습니다. ');
+insert into forte values('dept18','구강악안면외과에서는 구강, 턱 및 얼굴에 발생하는 질환, 외상 및 기형을 진단하고 치료하는 치과의 한 분과로서 수술을 전문으로 시행하며 입원환자를 돌보고 있습니다.');
+insert into forte values('dept19','다른 병원에서 찾아보기 어려운 피부과용 초음파기기, 피부 혈류 측정을 위한 레이저 도플러 등의 비침습적 검사장비를 피부 질환의 진단에 응용하고 있으며 다수의 레이저 장비, 광선치료 장비 등이 도입되어 있어 피부 질환의 진단과 치료에 선두주자로 자리매김하고 있으며, 국제적인 진료의 표준화에 발맞추고자 국내외 여러 임상시험에도 참여하고 있습니다.');
+insert into forte values('dept20','핵의학과는 5명의 교수를 비롯한 10여명의 의사, 60 여명의 직원들이 영상검사실, PET검사실, 검체검사실 등에서 국제적인 수준의 검사 · 진료 서비스를 제공하고 있습니다.');
+insert into forte values('dept21','심장외과의 연간 개심술 건수는 1200개에 달하고 있어 국내 최고 수준이라고 할 수 있습니다. 특히 수술 건수뿐만 아니라 수술 성적은 단연 국내 1위로서 심장 수술의 대부분을 차지하고 있는 판막 수술과 관상 동맥 수술의 수술 사망률은 0.5% 수준입니다. 최근에는 Hybrid 수술실을 갖추었을 뿐 아니라 다빈치 기계를 이용한 로봇 수술도 가능하게 되어 심장수술의 최첨단을 이끌고 있습니다. ');
+insert into forte values('dept22','매년 수행되는 수술건수는 약 3600건 정도이며 이중 양성질환수술이 1830건, 암수술이 1770건 (2014년 기준)로 국내 최대 규모를 자랑합니다. 이를 위하여 Minimal Invasive Surgery Center (최소침습수술센터)와 Gynecologic Clinical Trial Center (부인과 임상시험센터)를 운영하고 있습니다.');
+insert into forte values('dept23','다양한 경험을 가진 뇌신경마취 전문의사들이 뇌 종양, 뇌동맥류 등 혈관기형, 전간, 외상 및 다양한 척추질환의 수술과 소아 뇌종양, 모야모야 병 등의 소아 뇌 질환 수술에 적절한 마취를 제공합니다. 특히 수술 동안 적절한 뇌 혈류와 산소 공급을 유지하면서 신경외과 수술에 가장 적합한 수술환경을 제공합니다. ');
+insert into forte values('dept24','방사선종양학과는 치료할 표적체적을 잘 설정할 수 있도록 CT, MRI, PET-CT 등 다양한 치료계획용 영상을 치료계획에 적극 활용하며, 양성자센터에 방사선치료 계획용 MRI를 설치하여 가동 중입니다. 또한 폐, 간 등 호흡에 따른 움직임에 영향을 받는 종양에 대해서는 사차원 CT와 사차원방사선치료 전용 장비인 Varian iX 및 Novalis TX 를 이용하여 치료 오차를 최소화하고 있습니다.');
+insert into forte values('dept25','');
+insert into forte values('dept26','류마티스 전문 의료진은 독보적인 경험과 노하우를 바탕으로 최상의 진료 서비스를 보장합니다. 본원이 자랑하는 첨단 생물학적 치료 기법은 각종 류마티스성 질환을 효율적으로 통제할 수 있게끔 보장합니다.');
+insert into forte values('dept27','');
+insert into forte values('dept28','가슴통증, 호흡곤란, 두근거림 등을 호소하는 여성 환자들의 심장질환을 조기에 정확히 진단하고 이에 대한 적절한 치료를 받을 수 있는 여성심장 전문의가 진료하는 종합적이고 체계적인 전문 클리닉으로 심장혈관이미징센터, 내분비내과, 산부인과 등과 긴밀한 협진체제를 유지하고 있습니다.');
